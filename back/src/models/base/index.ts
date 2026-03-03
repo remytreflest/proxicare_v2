@@ -46,8 +46,11 @@ export const initModels = () => {
     foreignKey: 'StructureId'
   });
 
-  Prescription.belongsTo(Patient, { foreignKey: 'SocialSecurityNumber', targetKey: 'SocialSecurityNumber' })
+  Prescription.belongsTo(Patient, { foreignKey: 'SocialSecurityNumber', targetKey: 'SocialSecurityNumber' });
+  Prescription.belongsTo(HealthcareProfessional, { foreignKey: 'HealthcareProfessionalId' });
   Prescription.hasMany(PrescriptionHealthcareAct, { foreignKey: 'PrescriptionId' });
+
+  HealthcareProfessional.hasMany(Prescription, { foreignKey: 'HealthcareProfessionalId' });
   
   PrescriptionHealthcareAct.belongsTo(Prescription, { foreignKey: 'PrescriptionId' });
   PrescriptionHealthcareAct.belongsTo(HealthcareAct, { foreignKey: 'HealthcareActId' });

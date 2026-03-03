@@ -1,5 +1,3 @@
-import swaggerJsdoc from 'swagger-jsdoc';
-
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
@@ -84,7 +82,7 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
         properties: {
           id: { type: 'integer', example: 1 },
           userId: { type: 'string', example: 'auth0|789012' },
-          speciality: { type: 'string', enum: ['NURSE'], example: 'NURSE' },
+          speciality: { type: 'string', enum: ['NURSE', 'DOCTOR'], example: 'NURSE' },
           idn: { type: 'string', example: '123456789', description: 'Numéro ADELI/RPPS' },
         },
       },
@@ -246,9 +244,9 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
                 type: 'object',
                 required: ['speciality', 'structureId', 'idn'],
                 properties: {
-                  speciality: { type: 'string', enum: ['NURSE'], example: 'NURSE' },
+                  speciality: { type: 'string', enum: ['NURSE', 'DOCTOR'], example: 'NURSE', description: 'La spécialité DOCTOR attribue automatiquement le rôle DOCTOR' },
                   structureId: { type: 'integer', example: 1 },
-                  idn: { type: 'string', example: '123456789', description: 'Numéro ADELI ou RPPS' },
+                  idn: { type: 'string', example: '123456789', description: 'Numéro ADELI/RPPS' },
                 },
               },
             },
@@ -476,7 +474,7 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
       post: {
         tags: ['Prescriptions'],
         summary: 'Créer une prescription',
-        description: 'Crée une nouvelle prescription pour un patient',
+        description: 'Crée une nouvelle prescription pour un patient. Requiert le rôle DOCTOR.',
         security: [{ bearerAuth: [], userIdHeader: [] }],
         requestBody: {
           required: true,
@@ -484,9 +482,10 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['socialSecurityNumber', 'startDate', 'endDate', 'acts'],
+                required: ['socialSecurityNumber', 'healthcareProfessionalId', 'startDate', 'endDate', 'acts'],
                 properties: {
                   socialSecurityNumber: { type: 'string', example: '190017512345678' },
+                  healthcareProfessionalId: { type: 'integer', example: 1, description: 'ID du professionnel de santé à qui est attribuée la prescription' },
                   startDate: { type: 'string', format: 'date', example: '2026-04-06' },
                   endDate: { type: 'string', format: 'date', example: '2026-10-06' },
                   acts: {
@@ -508,7 +507,8 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
         responses: {
           201: { description: 'Prescription créée avec succès' },
           400: { description: 'Champs requis manquants ou invalides' },
-          404: { description: 'Patient ou acte de soin non trouvé' },
+          403: { description: "L'utilisateur n'a pas le rôle DOCTOR" },
+          404: { description: 'Utilisateur, patient ou acte de soin non trouvé' },
         },
       },
     },

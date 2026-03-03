@@ -1,14 +1,17 @@
 import { Model, DataTypes } from 'sequelize';
 import sequelize from '@/config/database';
 import Patient from './Patient';
+import HealthcareProfessional from './HealthcareProfessional';
 
 export class Prescription extends Model {
   public Id!: number;
   public SocialSecurityNumber!: string;
   public StartDate!: Date;
   public EndDate!: Date;
+  public HealthcareProfessionalId!: number | null;
 
   public Patient?: Patient;
+  public HealthcareProfessional?: HealthcareProfessional;
 }
 
 Prescription.init({
@@ -32,7 +35,11 @@ Prescription.init({
   EndDate: {
     type: DataTypes.DATEONLY,
     allowNull: false,
-  }
+  },
+  HealthcareProfessionalId: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+  },
 }, {
   sequelize,
   modelName: 'Prescription',

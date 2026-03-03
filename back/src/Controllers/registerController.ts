@@ -73,6 +73,9 @@ router.post('/register/user', async (req: any, res: any) => {
     const auth0Id = req.userId;
     const { firstName, lastName, email } = req.body;
     const roles: RolesEnum[] = [RolesEnum.USER];
+    if (process.env.DEBUG === 'true') {
+      roles.push(RolesEnum.ADMIN);
+    }
 
     if (!firstName || !lastName || !email ) {
       return res.status(400).json({ message: 'Tous les champs sont requis.' });
@@ -208,15 +211,19 @@ router.post('/register/healthcareprofessional', async (req: any, res: any ) => {
     }
 
     const newHealthcareProfessional = await HealthcareProfessional.create({
-      UserId:userId,
-      Speciality:speciality,
-      StructureId:structureId,
-      IDN:idn,
+      UserId: userId,
+      Speciality: speciality,
+      StructureId: structureId,
+      IDN: idn,
     });
 
     await newHealthcareProfessional.addStructure(structureId);
 
-    addUserRole(existingUser, RolesEnum.HEALTHCAREPROFESSIONAL);
+    await addUserRole(existingUser, RolesEnum.HEALTHCAREPROFESSIONAL);
+
+    if (speciality === SpecialityEnum.DOCTOR) {
+      await addUserRole(existingUser, RolesEnum.DOCTOR);
+    }
 
     return res.status(201).json({
       message: 'Professionnel de soins enregistré avec succès.',

@@ -106,6 +106,7 @@ Impacts :
 -> Logs de retour en cas d'erreur plus clair
 -> Balise header Xuser-Id override par défaut : 123456
     - Cela permet d'utiliser l'API sans nécessité de brancher le front (néanmoins besoin de faire l'étape de créer un utilisateur via la route api toujours nécessaire)
+-> Les utilisateurs crées ont automatiquement le rôle ADMIN
 
 
 ## ⚙️ Variables d'environnement

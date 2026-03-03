@@ -159,6 +159,25 @@ describe('Register Controller', () => {
 
       const res = await request(app).post('/api/register/healthcareprofessional').send(hcpData);
       expect(res.statusCode).toBe(201);
+      expect(addUserRole).toHaveBeenCalledWith(mockUser, RolesEnum.HEALTHCAREPROFESSIONAL);
+      expect(addUserRole).not.toHaveBeenCalledWith(mockUser, RolesEnum.DOCTOR);
+    });
+
+    it('should assign DOCTOR role when speciality is DOCTOR', async () => {
+      const mockUser = { id: '1' };
+      const mockPro = { addStructure: jest.fn() };
+
+      (User.findByPk as jest.Mock).mockResolvedValue(mockUser);
+      (HealthcareProfessional.findOne as jest.Mock).mockResolvedValue(null);
+      (HealthcareProfessional.create as jest.Mock).mockResolvedValue(mockPro);
+
+      const res = await request(app)
+        .post('/api/register/healthcareprofessional')
+        .send({ ...hcpData, speciality: SpecialityEnum.DOCTOR });
+
+      expect(res.statusCode).toBe(201);
+      expect(addUserRole).toHaveBeenCalledWith(mockUser, RolesEnum.HEALTHCAREPROFESSIONAL);
+      expect(addUserRole).toHaveBeenCalledWith(mockUser, RolesEnum.DOCTOR);
     });
 
     it('should return 400 if missing fields', async () => {
@@ -191,4 +210,5 @@ describe('Register Controller', () => {
       expect(res.statusCode).toBe(500);
     });
   });
+
 });

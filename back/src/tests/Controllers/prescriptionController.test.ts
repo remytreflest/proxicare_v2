@@ -22,6 +22,17 @@ describe('Prescription Controller', () => {
   const userId = 'user-123';
   const validPatient = { SocialSecurityNumber: '123456789', UserId: userId };
   const validAct = { id: 1, occurrencesPerDay: 1 };
+  const validProfessional = { Id: 1 };
+  const doctorUser = { Roles: 'USER,HEALTHCAREPROFESSIONAL,DOCTOR' };
+  const nonDoctorUser = { Roles: 'USER,HEALTHCAREPROFESSIONAL' };
+
+  const validBody = {
+    socialSecurityNumber: '123456789',
+    healthcareProfessionalId: 1,
+    startDate: '2025-05-30',
+    endDate: '2025-05-31',
+    acts: [validAct],
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -29,59 +40,78 @@ describe('Prescription Controller', () => {
 
   describe('POST /prescriptions', () => {
     it('should create a prescription with valid data', async () => {
+      (User.findByPk as jest.Mock).mockResolvedValue(doctorUser);
       (Patient.findOne as jest.Mock).mockResolvedValue(validPatient);
+      (HealthcareProfessional.findByPk as jest.Mock).mockResolvedValue(validProfessional);
       (HealthcareAct.findByPk as jest.Mock).mockResolvedValue(validAct);
       (Prescription.create as jest.Mock).mockResolvedValue({ Id: 1 });
       (PrescriptionHealthcareAct.create as jest.Mock).mockResolvedValue(true);
 
-      const res = await request(app).post('/api/prescriptions').send({
-        socialSecurityNumber: '123456789',
-        startDate: '2025-05-30',
-        endDate: '2025-05-31',
-        acts: [validAct],
-      });
+      const res = await request(app).post('/api/prescriptions').send(validBody);
 
       expect(res.statusCode).toBe(201);
     });
 
+    it('should return 403 if user does not have DOCTOR role', async () => {
+      (User.findByPk as jest.Mock).mockResolvedValue(nonDoctorUser);
+
+      const res = await request(app).post('/api/prescriptions').send(validBody);
+
+      expect(res.statusCode).toBe(403);
+      expect(res.body.message).toMatch(/DOCTOR/);
+    });
+
+    it('should return 404 if requesting user not found', async () => {
+      (User.findByPk as jest.Mock).mockResolvedValue(null);
+
+      const res = await request(app).post('/api/prescriptions').send(validBody);
+
+      expect(res.statusCode).toBe(404);
+    });
+
     it('should return 400 on missing fields', async () => {
+      (User.findByPk as jest.Mock).mockResolvedValue(doctorUser);
+
       const res = await request(app).post('/api/prescriptions').send({});
       expect(res.statusCode).toBe(400);
     });
 
     it('should return 404 if patient not found', async () => {
+      (User.findByPk as jest.Mock).mockResolvedValue(doctorUser);
       (Patient.findOne as jest.Mock).mockResolvedValue(null);
-      const res = await request(app).post('/api/prescriptions').send({
-        socialSecurityNumber: '123456789',
-        startDate: '2025-05-30',
-        endDate: '2025-05-31',
-        acts: [validAct],
-      });
+
+      const res = await request(app).post('/api/prescriptions').send(validBody);
+      expect(res.statusCode).toBe(404);
+    });
+
+    it('should return 404 if healthcare professional not found', async () => {
+      (User.findByPk as jest.Mock).mockResolvedValue(doctorUser);
+      (Patient.findOne as jest.Mock).mockResolvedValue(validPatient);
+      (HealthcareProfessional.findByPk as jest.Mock).mockResolvedValue(null);
+
+      const res = await request(app).post('/api/prescriptions').send(validBody);
       expect(res.statusCode).toBe(404);
     });
 
     it('should return 404 if act not found', async () => {
+      (User.findByPk as jest.Mock).mockResolvedValue(doctorUser);
       (Patient.findOne as jest.Mock).mockResolvedValue(validPatient);
+      (HealthcareProfessional.findByPk as jest.Mock).mockResolvedValue(validProfessional);
       (HealthcareAct.findByPk as jest.Mock).mockResolvedValue(null);
 
-      const res = await request(app).post('/api/prescriptions').send({
-        socialSecurityNumber: '123456789',
-        startDate: '2025-05-30',
-        endDate: '2025-05-31',
-        acts: [validAct],
-      });
+      const res = await request(app).post('/api/prescriptions').send(validBody);
 
       expect(res.statusCode).toBe(404);
     });
 
     it('should return 400 if occurrencesPerDay invalid', async () => {
+      (User.findByPk as jest.Mock).mockResolvedValue(doctorUser);
       (Patient.findOne as jest.Mock).mockResolvedValue(validPatient);
+      (HealthcareProfessional.findByPk as jest.Mock).mockResolvedValue(validProfessional);
       (HealthcareAct.findByPk as jest.Mock).mockResolvedValue(validAct);
 
       const res = await request(app).post('/api/prescriptions').send({
-        socialSecurityNumber: '123456789',
-        startDate: '2025-05-30',
-        endDate: '2025-05-31',
+        ...validBody,
         acts: [{ id: 1, occurrencesPerDay: 0 }],
       });
 
@@ -89,13 +119,10 @@ describe('Prescription Controller', () => {
     });
 
     it('should return 500 on error', async () => {
+      (User.findByPk as jest.Mock).mockResolvedValue(doctorUser);
       (Patient.findOne as jest.Mock).mockRejectedValue(new Error('fail'));
-      const res = await request(app).post('/api/prescriptions').send({
-        socialSecurityNumber: '123456789',
-        startDate: '2025-05-30',
-        endDate: '2025-05-31',
-        acts: [validAct],
-      });
+
+      const res = await request(app).post('/api/prescriptions').send(validBody);
       expect(res.statusCode).toBe(500);
     });
   });

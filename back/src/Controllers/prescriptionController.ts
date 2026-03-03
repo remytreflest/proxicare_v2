@@ -11,6 +11,7 @@ import { User } from '@/models/User';
 import { Structure } from '@/models/Structure';
 import HealthcareProfessional from '@/models/HealthcareProfessional';
 import Appointment from '@/models/Appointment';
+import { RolesEnum } from '@/resources/emuns/rolesEnum';
 
 const router = express.Router();
 
@@ -21,9 +22,21 @@ const router = express.Router();
  */
 router.post('/prescriptions', async (req: any, res: any) => {
   try {
-    const { socialSecurityNumber, startDate, endDate, acts} = req.body;
+    const userId = req.userId;
 
-    if (!socialSecurityNumber || !startDate || !endDate || !Array.isArray(acts)) {
+    const requestingUser = await User.findByPk(userId);
+    if (!requestingUser) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé.' });
+    }
+
+    const roles = requestingUser.Roles ? requestingUser.Roles.split(',') : [];
+    if (!roles.includes(RolesEnum.DOCTOR)) {
+      return res.status(403).json({ message: 'Vous devez avoir le rôle DOCTOR pour créer une prescription.' });
+    }
+
+    const { socialSecurityNumber, healthcareProfessionalId, startDate, endDate, acts} = req.body;
+
+    if (!socialSecurityNumber || !healthcareProfessionalId || !startDate || !endDate || !Array.isArray(acts)) {
       return res.status(400).json({ message: 'Champs requis manquants ou invalides.' });
     }
 
@@ -43,8 +56,13 @@ router.post('/prescriptions', async (req: any, res: any) => {
       return res.status(404).json({ message: 'Patient non trouvé.' });
     }
 
+    const healthcareProfessional = await HealthcareProfessional.findByPk(healthcareProfessionalId);
+    if (!healthcareProfessional) {
+      return res.status(404).json({ message: 'Professionnel de santé introuvable.' });
+    }
+
     for (const act of acts as iPrescriptionHealthcareAct[]) {
-        
+
         const existingAct = await HealthcareAct.findByPk(act.id);
         if (!existingAct) {
             return res.status(404).json({ message: `Acte de soin ID ${act.id} introuvable.` });
@@ -57,6 +75,7 @@ router.post('/prescriptions', async (req: any, res: any) => {
 
     const prescription = await Prescription.create({
       SocialSecurityNumber: socialSecurityNumber,
+      HealthcareProfessionalId: healthcareProfessionalId,
       StartDate: startDateObj,
       EndDate: endDateObj
     });
