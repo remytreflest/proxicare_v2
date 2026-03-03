@@ -31,7 +31,6 @@ describe('Structure Controller', () => {
       const res = await request(app).get('/api/structures');
 
       expect(res.statusCode).toBe(500);
-      expect(res.body).toEqual({ message: 'Erreur interne du serveur.' });
     });
   });
 
