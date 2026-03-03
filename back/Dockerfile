@@ -42,7 +42,7 @@ COPY --from=builder /app/config ./config
 COPY --from=builder /app/.sequelizerc ./.sequelizerc
 
 # Copier les fichiers Swagger YAML
-COPY --from=builder /app/src/swagger ./dist/swagger
+# COPY --from=builder /app/src/swagger ./dist/swagger
 
 # Changer le propriétaire des fichiers
 RUN chown -R nodejs:nodejs /app

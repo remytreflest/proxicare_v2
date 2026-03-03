@@ -1,4 +1,5 @@
 import express from 'express';
+import { serverError } from '@/helpers/serverError';
 import Appointment from '@/models/Appointment';
 import HealthcareProfessional from '@/models/HealthcareProfessional';
 import HealthcareAct from '@/models/HealthcareAct';
@@ -59,7 +60,7 @@ router.get('/appointments', async (req: any, res: any) => {
     return res.status(200).json(appointments);
 
   } catch (error) {
-    return res.status(500).json({ message: 'Erreur interne lors de la récupération des rendez-vous.' });
+    return serverError(res, error);
   }
 });
 
@@ -165,10 +166,9 @@ router.post('/appointment', async (req: any, res: any) => {
 
     res.status(201).json(appointment);
   } 
-  catch (error) 
+  catch (error)
   {
-    console.log(error)
-    res.status(500).json({ message: 'Erreur serveur.' });
+    return serverError(res, error);
   }
 });
 
@@ -221,9 +221,8 @@ router.delete('/appointment/:id', async (req: any, res: any) => {
     await appointment.destroy();
     res.status(200).json({ message: 'Rendez-vous supprimé avec succès' });
 
-  } catch (error) 
-  {
-    res.status(500).json({ message: "Erreur serveur lors de la suppression du rendez-vous" });
+  } catch (error) {
+    return serverError(res, error);
   }
 });
 

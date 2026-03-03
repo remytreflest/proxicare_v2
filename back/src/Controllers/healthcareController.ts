@@ -1,4 +1,5 @@
 import express from 'express';
+import { serverError } from '@/helpers/serverError';
 import HealthcareProfessionalHealthcareAct from '@/models/HealthcareProfessionalHealthcareAct';
 import HealthcareProfessional from '@/models/HealthcareProfessional';
 import HealthcareAct from '@/models/HealthcareAct';
@@ -39,8 +40,7 @@ router.post('/healthcare/act/healthcareprofessional', async (req: any, res: any)
 
     return res.status(201).json({ message: 'Association créée avec succès.' });
   } catch (error) {
-    console.error('Erreur association acte/soignant :', error);
-    return res.status(500).json({ message: 'Erreur serveur.' });
+    return serverError(res, error);
   }
 });
 
@@ -77,8 +77,7 @@ router.delete('/healthcare/act/healthcareprofessional/:actId', async (req: any, 
 
     return res.status(200).json({ message: 'Acte supprimé avec succès.' });
   } catch (error) {
-    console.error('Erreur suppression acte soignant :', error);
-    return res.status(500).json({ message: 'Erreur serveur.' });
+    return serverError(res, error);
   }
 });
 
@@ -126,7 +125,7 @@ router.post('/healthcare/act', async (req: any, res: any) => {
       act: newAct,
     });
   } catch (error) {
-    return res.status(500).json({ message: 'Erreur interne du serveur.' });
+    return serverError(res, error);
   }
 });
 
@@ -144,7 +143,7 @@ router.get('/healthcare/acts', async (req: any, res: any) => {
     const acts = await HealthcareAct.findAll();
     return res.status(200).json(acts);
   } catch (error) {
-    return res.status(500).json({ message: 'Erreur lors de la récupération des actes de soins' });
+    return serverError(res, error);
   }
 });
 
@@ -169,8 +168,7 @@ router.get('/healthcare/acts/user', async (req: any, res: any) => {
 
     return res.status(200).json(healthcareprofessional.HealthcareActs);
   } catch (error) {
-    console.error('Erreur récupération actes utilisateur :', error);
-    return res.status(500).json({ message: 'Erreur serveur.' });
+    return serverError(res, error);
   }
 });
 

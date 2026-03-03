@@ -1,4 +1,5 @@
 import express from 'express';
+import { serverError } from '@/helpers/serverError';
 import { Prescription } from '@/models/Prescription';
 import { PrescriptionHealthcareAct } from '@/models/PrescriptionHealthcareAct';
 import HealthcareAct from '@/models/HealthcareAct';
@@ -71,8 +72,7 @@ router.post('/prescriptions', async (req: any, res: any) => {
 
     return res.status(201).json({ message: 'Prescription enregistrée avec succès.' });
   } catch (error) {
-    console.error('Erreur création prescription:', error);
-    return res.status(500).json({ message: 'Erreur serveur.' });
+    return serverError(res, error);
   }
 });
 
@@ -101,8 +101,7 @@ router.get('/prescriptions/patient', async (req: any, res: any) => {
 
     return res.status(200).json(prescriptions);
   } catch (error) {
-    console.error('Erreur récupération prescriptions:', error);
-    return res.status(500).json({ message: "Erreur serveur." });
+    return serverError(res, error);
   }
 });
 
@@ -166,8 +165,7 @@ router.get('/prescriptions/healthcareprofessional', async (req: any, res: any) =
 
     return res.status(200).json(prescriptions);
   } catch (error) {
-    console.error('Erreur récupération prescriptions :', error);
-    return res.status(500).json({ message: 'Erreur interne du serveur' });
+    return serverError(res, error);
   }
 });
 

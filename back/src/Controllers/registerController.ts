@@ -7,6 +7,7 @@ import HealthcareProfessional from '@/models/HealthcareProfessional';
 import { joinRoles } from '@/helpers/controllers/registerHelper';
 import { addUserRole } from '@/resources/helpers/userHelper';
 import { Structure } from '@/models/Structure';
+import { serverError } from '@/helpers/serverError';
 
 const router = express.Router();
 
@@ -45,8 +46,7 @@ router.get('/user', async (req: any, res: any) => {
     return res.status(200).json(user);
 
   } catch (error) {
-    console.log(error)
-    return res.status(500).json({ message: "Erreur serveur." });
+    return serverError(res, error);
   }
 });
 
@@ -98,9 +98,9 @@ router.post('/register/user', async (req: any, res: any) => {
 
     return res.status(201).json(newUser);
   } 
-  catch (error) 
+  catch (error)
   {
-    return res.status(500).json({ message: 'Erreur interne du serveur.' });
+    return serverError(res, error);
   }
 });
 
@@ -160,10 +160,9 @@ router.post('/register/patient', async (req: any, res: any) => {
       patient: newPatient,
     });
   } 
-  catch (error) 
+  catch (error)
   {
-    console.log(error)
-    return res.status(500).json({ message: 'Erreur interne du serveur.' });
+    return serverError(res, error);
   }
 });
 
@@ -224,10 +223,9 @@ router.post('/register/healthcareprofessional', async (req: any, res: any ) => {
       patient: newHealthcareProfessional ,
     });
   } 
-  catch (error) 
+  catch (error)
   {
-    console.log(error)
-    return res.status(500).json({ message: 'Erreur interne du serveur.' });
+    return serverError(res, error);
   }
 });
 

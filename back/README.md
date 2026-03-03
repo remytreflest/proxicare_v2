@@ -47,69 +47,32 @@ API REST pour la gestion des soins médicaux à domicile.
 git clone <repository-url>
 cd nodejs-api
 
-# Installer les dépendances
-npm install
+# Être dans le répertoire d'installation
+# Avoir docker desktop opérationnel
 
-# Copier le fichier de configuration
-cp .env.example .env
-# Éditer .env avec vos valeurs
+# Build et déployer l'api et la base de donnée
+docker-compose up -d --build
 
-# Exécuter les migrations
-npm run migrate
-
-# Démarrer en mode développement
-npm run dev
+# Lancer la migration de la base de données pour obtenir un état initial
+docker-compose exec api npx sequelize-cli db:migrate
 ```
 
 L'API sera accessible sur `http://localhost:3000`
 
-## 🐳 Docker
-
-### Démarrage rapide
-
 ```bash
-# Copier le fichier de configuration
-cp .env.example .env
-
-# Démarrer tous les services (API + PostgreSQL)
-docker-compose up -d
-
-# Voir les logs
-docker-compose logs -f api
+# Revenir à un état initial (avec suppression du volumes de la bdd)
+docker-compose down -v
 ```
 
-### Services disponibles
 
-| Service | Port | Description |
-|---------|------|-------------|
-| API | 3000 | API Node.js |
-| PostgreSQL | 5432 | Base de données |
-| pgAdmin | 5050 | Interface d'administration (profil dev) |
+## 🐳 Docker Logs
 
-### Mode développement avec hot-reload
+# API
+docker logs -f proxicare-api
 
-```bash
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
-```
+# Base de données PostgreSQL
+docker logs -f proxicare-postgres
 
-### Commandes Docker utiles
-
-```bash
-# Construire l'image
-npm run docker:build
-
-# Démarrer les services
-npm run docker:up
-
-# Arrêter les services
-npm run docker:down
-
-# Voir les logs
-npm run docker:logs
-
-# Accéder au shell du conteneur
-npm run docker:shell
-```
 
 ## 📚 Documentation API (Swagger)
 
@@ -117,51 +80,6 @@ La documentation interactive de l'API est disponible via Swagger UI :
 
 - **URL** : `http://localhost:3000/api-docs`
 - **JSON OpenAPI** : `http://localhost:3000/api-docs.json`
-
-### Endpoints principaux
-
-| Méthode | Route | Description |
-|---------|-------|-------------|
-| GET | `/healthcheck` | Vérification santé serveur |
-| GET | `/api/user` | Récupérer l'utilisateur courant |
-| POST | `/api/register/user` | Créer un utilisateur |
-| POST | `/api/register/patient` | Enregistrer un patient |
-| POST | `/api/register/healthcareprofessional` | Enregistrer un professionnel |
-| GET | `/api/healthcare/acts` | Liste des actes de soins |
-| GET | `/api/appointments` | Liste des rendez-vous |
-| POST | `/api/appointment` | Créer un rendez-vous |
-| POST | `/api/prescriptions` | Créer une prescription |
-| GET | `/api/qrcode/patient/:id` | Générer QR Code |
-| GET | `/api/structures` | Liste des structures |
-
-## 📜 Scripts disponibles
-
-```bash
-# Développement
-npm run dev              # Démarrer avec hot-reload
-npm run start:dev        # Alias pour dev
-
-# Production
-npm run build            # Compiler TypeScript
-npm run start            # Démarrer la version compilée
-
-# Base de données
-npm run migrate          # Exécuter les migrations
-npm run migrate:undo     # Annuler la dernière migration
-npm run migrate:undo:all # Annuler toutes les migrations
-
-# Tests
-npm run test             # Exécuter les tests
-npm run test:watch       # Tests en mode watch
-npm run coverage         # Couverture de code
-
-# Docker
-npm run docker:build     # Construire l'image
-npm run docker:up        # Démarrer les services
-npm run docker:down      # Arrêter les services
-npm run docker:logs      # Voir les logs
-npm run docker:shell     # Shell dans le conteneur
-```
 
 ## ⚙️ Variables d'environnement
 

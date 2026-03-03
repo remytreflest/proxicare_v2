@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import { serverError } from '@/helpers/serverError';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
 import { Prescription } from '@/models/Prescription';
@@ -76,8 +77,7 @@ router.get('/qrcode/patient/:prescriptionHealthcareActId', async (req: any, res:
 
     return res.status(201).json({ qrCodeDataUrl });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: 'Erreur interne serveur.' });
+    return serverError(res, err);
   }
 });
 
@@ -147,8 +147,7 @@ router.get('/validate/healthcareprofessional/:prescriptionHealthcareActId/:token
       validatedAt: new Date(),
     });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: 'Erreur interne serveur.' });
+    return serverError(res, err);
   }
 });
 
