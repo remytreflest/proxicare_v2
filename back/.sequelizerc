@@ -1,0 +1,16 @@
+const path = require('path');
+
+let hasTsNode = false;
+try {
+  require('ts-node/register');
+  hasTsNode = true;
+} catch (_) {}
+
+const base = hasTsNode ? 'src' : 'dist';
+
+module.exports = {
+  config: path.resolve('config', 'config.js'),
+  'models-path': path.resolve(base, 'models'),
+  'seeders-path': path.resolve(base, 'seeders'),
+  'migrations-path': path.resolve(base, 'migrations'),
+};

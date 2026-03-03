@@ -1,0 +1,116 @@
+paths:
+  /api/appointments:
+    get:
+      tags:
+        - Rendez-vous
+      summary: Liste des rendez-vous
+      description: Retourne tous les rendez-vous de l'utilisateur connecté (patient ou professionnel)
+      security:
+        - bearerAuth: []
+          userIdHeader: []
+      responses:
+        '200':
+          description: Liste des rendez-vous
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Appointment'
+        '403':
+          description: Utilisateur non autorisé (ni patient, ni professionnel)
+        '500':
+          description: Erreur serveur
+
+  /api/appointment:
+    post:
+      tags:
+        - Rendez-vous
+      summary: Créer un rendez-vous
+      description: |
+        Crée un nouveau rendez-vous entre un patient et le professionnel de santé connecté.
+        Le professionnel doit être habilité à réaliser l'acte prescrit.
+      security:
+        - bearerAuth: []
+          userIdHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - patientId
+                - prescriptionHealthcareActId
+                - appointmentStartDate
+                - appointmentEndDate
+              properties:
+                patientId:
+                  type: integer
+                  description: ID du patient
+                  example: 1
+                prescriptionHealthcareActId:
+                  type: integer
+                  description: ID de l'acte prescrit
+                  example: 1
+                appointmentStartDate:
+                  type: string
+                  format: date-time
+                  description: Date et heure de début du rendez-vous
+                  example: '2025-02-10T09:00:00Z'
+                appointmentEndDate:
+                  type: string
+                  format: date-time
+                  description: Date et heure de fin du rendez-vous
+                  example: '2025-02-10T09:30:00Z'
+      responses:
+        '201':
+          description: Rendez-vous créé avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Appointment'
+        '400':
+          description: |
+            Erreur de validation :
+            - Champs manquants
+            - Date de début >= date de fin
+            - Dates dans le passé
+        '403':
+          description: Professionnel non habilité pour cet acte
+        '404':
+          description: Patient ou acte prescrit non trouvé
+
+  /api/appointment/{id}:
+    delete:
+      tags:
+        - Rendez-vous
+      summary: Supprimer un rendez-vous
+      description: Supprime un rendez-vous existant. Seul le patient ou le professionnel concerné peut supprimer.
+      security:
+        - bearerAuth: []
+          userIdHeader: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID du rendez-vous à supprimer
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Rendez-vous supprimé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Rendez-vous supprimé avec succès
+        '400':
+          description: ID invalide
+        '403':
+          description: Non autorisé à supprimer ce rendez-vous
+        '404':
+          description: Rendez-vous non trouvé

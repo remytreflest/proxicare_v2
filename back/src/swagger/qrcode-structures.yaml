@@ -1,0 +1,127 @@
+paths:
+  /api/qrcode/patient/{prescriptionHealthcareActId}:
+    get:
+      tags:
+        - QR Code
+      summary: Générer un QR Code
+      description: |
+        Génère un QR Code pour valider un soin prescrit.
+        Le QR Code contient un token à usage unique valide 15 secondes.
+        Le patient scanne le QR Code avec l'appareil du professionnel pour valider le soin.
+      security:
+        - bearerAuth: []
+          userIdHeader: []
+      parameters:
+        - name: prescriptionHealthcareActId
+          in: path
+          required: true
+          description: ID de l'acte prescrit à valider
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: QR Code généré avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  qrCodeDataUrl:
+                    type: string
+                    description: Image du QR Code encodée en base64 (data URL)
+                    example: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg...'
+                  token:
+                    type: string
+                    description: Token de validation (UUID)
+                    example: '550e8400-e29b-41d4-a716-446655440000'
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    description: Date d'expiration du token (15 secondes)
+        '400':
+          description: |
+            Erreur de validation :
+            - Acte déjà réalisé ou annulé
+            - Aucun rendez-vous actif pour cet acte
+        '403':
+          description: L'utilisateur n'est pas le patient concerné
+        '404':
+          description: Acte prescrit non trouvé
+
+  /api/validate/healthcareprofessional/{prescriptionHealthcareActId}/{token}:
+    get:
+      tags:
+        - QR Code
+      summary: Valider un soin via QR Code
+      description: |
+        Valide la réalisation d'un soin via le token du QR Code.
+        Le professionnel scanne le QR Code du patient pour confirmer la réalisation du soin.
+        Le token doit être valide (non expiré, correspond à l'acte).
+      security:
+        - bearerAuth: []
+          userIdHeader: []
+      parameters:
+        - name: prescriptionHealthcareActId
+          in: path
+          required: true
+          description: ID de l'acte prescrit
+          schema:
+            type: integer
+        - name: token
+          in: path
+          required: true
+          description: Token de validation issu du QR Code
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Soin validé avec succès
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Soin validé avec succès.
+                  prescriptionHealthcareAct:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      status:
+                        type: string
+                        example: PERFORMED
+        '400':
+          description: |
+            Erreur de validation :
+            - Token invalide ou expiré
+            - Acte déjà validé
+        '403':
+          description: |
+            Le professionnel n'est pas autorisé :
+            - N'appartient pas à la même structure que le patient
+        '404':
+          description: Acte prescrit non trouvé
+
+  /api/structures:
+    get:
+      tags:
+        - Structures
+      summary: Liste des structures
+      description: Retourne la liste de toutes les structures médicales enregistrées
+      security:
+        - bearerAuth: []
+          userIdHeader: []
+      responses:
+        '200':
+          description: Liste des structures
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Structure'
+        '500':
+          description: Erreur serveur

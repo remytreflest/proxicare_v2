@@ -1,0 +1,30 @@
+const dotenv = require('dotenv');
+dotenv.config();
+
+// Support des deux conventions de nommage
+const db = process.env.DB_NAME || process.env.POSTGRES_DB || '';
+const user = process.env.DB_USER || process.env.POSTGRES_USER || '';
+const password = process.env.DB_PASSWORD || process.env.POSTGRES_PASSWORD || '';
+const host = process.env.DB_HOST || 'localhost';
+const port = parseInt(process.env.DB_PORT || '5432');
+
+const config = {
+  development: {
+    username: user,
+    password: password,
+    database: db,
+    host: host,
+    port: port,
+    dialect: 'postgres',
+  },
+  production: {
+    username: user,
+    password: password,
+    database: db,
+    host: host,
+    port: port,
+    dialect: 'postgres',
+  },
+};
+
+module.exports = config;
