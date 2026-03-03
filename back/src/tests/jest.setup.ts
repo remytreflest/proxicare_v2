@@ -1,4 +1,4 @@
-jest.mock('@/middlewares/expressjwt.config', () => {
+jest.mock('@/interfaces/http/middlewares/expressjwt.config', () => {
   const checkJwtMock = ((req: any, res: any, next: any) => {
     req.user = { sub: 'auth0|test-user' };
     next();
@@ -13,7 +13,7 @@ jest.mock('@/middlewares/expressjwt.config', () => {
   };
 });
 
-jest.mock('@/middlewares/extractUserId', () => {
+jest.mock('@/interfaces/http/middlewares/extractUserId', () => {
 
     const extractUserIdMock = ((req: any, res: any, next: any) => {
       req.userId = 'test-user-id'; // valeur simulée

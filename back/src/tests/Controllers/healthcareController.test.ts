@@ -1,13 +1,13 @@
 
 import request from 'supertest';
 import app from '@/app.test';
-import HealthcareProfessional from '@/models/HealthcareProfessional';
-import HealthcareAct from '@/models/HealthcareAct';
-import HealthcareProfessionalHealthcareAct from '@/models/HealthcareProfessionalHealthcareAct';
+import HealthcareProfessional from '@/infrastructure/database/models/HealthcareProfessional.model';
+import HealthcareAct from '@/infrastructure/database/models/HealthcareAct.model';
+import HealthcareProfessionalHealthcareAct from '@/infrastructure/database/models/HealthcareProfessionalHealthcareAct.model';
 
-jest.mock('@/models/HealthcareProfessional');
-jest.mock('@/models/HealthcareAct');
-jest.mock('@/models/HealthcareProfessionalHealthcareAct');
+jest.mock('@/infrastructure/database/models/HealthcareProfessional.model');
+jest.mock('@/infrastructure/database/models/HealthcareAct.model');
+jest.mock('@/infrastructure/database/models/HealthcareProfessionalHealthcareAct.model');
 
 describe('Healthcare Controller', () => {
 

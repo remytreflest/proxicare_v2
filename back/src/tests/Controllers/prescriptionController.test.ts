@@ -1,22 +1,22 @@
 import request from 'supertest';
 import app from '@/app.test';
-import { Prescription } from '@/models/Prescription';
-import { PrescriptionHealthcareAct } from '@/models/PrescriptionHealthcareAct';
-import HealthcareAct from '@/models/HealthcareAct';
-import Patient from '@/models/Patient';
-import HealthcareProfessional from '@/models/HealthcareProfessional';
-import { User } from '@/models/User';
-import { Structure } from '@/models/Structure';
-import Appointment from '@/models/Appointment';
+import { Prescription } from '@/infrastructure/database/models/Prescription.model';
+import { PrescriptionHealthcareAct } from '@/infrastructure/database/models/PrescriptionHealthcareAct.model';
+import HealthcareAct from '@/infrastructure/database/models/HealthcareAct.model';
+import Patient from '@/infrastructure/database/models/Patient.model';
+import HealthcareProfessional from '@/infrastructure/database/models/HealthcareProfessional.model';
+import { User } from '@/infrastructure/database/models/User.model';
+import { Structure } from '@/infrastructure/database/models/Structure.model';
+import Appointment from '@/infrastructure/database/models/Appointment.model';
 
-jest.mock('@/models/Prescription');
-jest.mock('@/models/PrescriptionHealthcareAct');
-jest.mock('@/models/HealthcareAct');
-jest.mock('@/models/Patient');
-jest.mock('@/models/HealthcareProfessional');
-jest.mock('@/models/User');
-jest.mock('@/models/Structure');
-jest.mock('@/models/Appointment');
+jest.mock('@/infrastructure/database/models/Prescription.model');
+jest.mock('@/infrastructure/database/models/PrescriptionHealthcareAct.model');
+jest.mock('@/infrastructure/database/models/HealthcareAct.model');
+jest.mock('@/infrastructure/database/models/Patient.model');
+jest.mock('@/infrastructure/database/models/HealthcareProfessional.model');
+jest.mock('@/infrastructure/database/models/User.model');
+jest.mock('@/infrastructure/database/models/Structure.model');
+jest.mock('@/infrastructure/database/models/Appointment.model');
 
 describe('Prescription Controller', () => {
   const userId = 'user-123';

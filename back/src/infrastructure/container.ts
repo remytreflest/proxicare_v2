@@ -1,0 +1,19 @@
+import { UserRepository } from './database/repositories/UserRepository';
+import { PatientRepository } from './database/repositories/PatientRepository';
+import { HealthcareProfessionalRepository } from './database/repositories/HealthcareProfessionalRepository';
+import { HealthcareActRepository } from './database/repositories/HealthcareActRepository';
+import { HealthcareProfessionalHealthcareActRepository } from './database/repositories/HealthcareProfessionalHealthcareActRepository';
+import { PrescriptionRepository } from './database/repositories/PrescriptionRepository';
+import { PrescriptionHealthcareActRepository } from './database/repositories/PrescriptionHealthcareActRepository';
+import { AppointmentRepository } from './database/repositories/AppointmentRepository';
+import { StructureRepository } from './database/repositories/StructureRepository';
+
+export const userRepo = new UserRepository();
+export const patientRepo = new PatientRepository();
+export const healthcareProfessionalRepo = new HealthcareProfessionalRepository();
+export const healthcareActRepo = new HealthcareActRepository();
+export const healthcareProfessionalActRepo = new HealthcareProfessionalHealthcareActRepository();
+export const prescriptionRepo = new PrescriptionRepository();
+export const prescriptionActRepo = new PrescriptionHealthcareActRepository();
+export const appointmentRepo = new AppointmentRepository();
+export const structureRepo = new StructureRepository();

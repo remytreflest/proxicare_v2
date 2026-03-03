@@ -1,8 +1,8 @@
 import request from 'supertest';
 import app from '@/app.test';
-import { Structure } from '@/models/Structure';
+import { Structure } from '@/infrastructure/database/models/Structure.model';
 
-jest.mock('@/models/Structure');
+jest.mock('@/infrastructure/database/models/Structure.model');
 
 describe('Structure Controller', () => {
 

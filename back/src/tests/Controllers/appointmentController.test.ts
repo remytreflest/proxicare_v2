@@ -1,21 +1,21 @@
 
 import request from 'supertest';
 import app from '@/app.test';
-import Appointment from '@/models/Appointment';
-import HealthcareProfessional from '@/models/HealthcareProfessional';
-import HealthcareAct from '@/models/HealthcareAct';
-import Patient from '@/models/Patient';
-import { User } from '@/models/User';
-import HealthcareProfessionalHealthcareAct from '@/models/HealthcareProfessionalHealthcareAct';
-import { PrescriptionHealthcareAct } from '@/models/PrescriptionHealthcareAct';
+import Appointment from '@/infrastructure/database/models/Appointment.model';
+import HealthcareProfessional from '@/infrastructure/database/models/HealthcareProfessional.model';
+import HealthcareAct from '@/infrastructure/database/models/HealthcareAct.model';
+import Patient from '@/infrastructure/database/models/Patient.model';
+import { User } from '@/infrastructure/database/models/User.model';
+import HealthcareProfessionalHealthcareAct from '@/infrastructure/database/models/HealthcareProfessionalHealthcareAct.model';
+import { PrescriptionHealthcareAct } from '@/infrastructure/database/models/PrescriptionHealthcareAct.model';
 
-jest.mock('@/models/Appointment');
-jest.mock('@/models/HealthcareProfessional');
-jest.mock('@/models/HealthcareAct');
-jest.mock('@/models/Patient');
-jest.mock('@/models/User');
-jest.mock('@/models/HealthcareProfessionalHealthcareAct');
-jest.mock('@/models/PrescriptionHealthcareAct');
+jest.mock('@/infrastructure/database/models/Appointment.model');
+jest.mock('@/infrastructure/database/models/HealthcareProfessional.model');
+jest.mock('@/infrastructure/database/models/HealthcareAct.model');
+jest.mock('@/infrastructure/database/models/Patient.model');
+jest.mock('@/infrastructure/database/models/User.model');
+jest.mock('@/infrastructure/database/models/HealthcareProfessionalHealthcareAct.model');
+jest.mock('@/infrastructure/database/models/PrescriptionHealthcareAct.model');
 
 describe('Appointment Controller', () => {
   const userId = 'user-1';

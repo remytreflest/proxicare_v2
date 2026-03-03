@@ -3,25 +3,25 @@ import request from 'supertest';
 import app from '@/app.test';
 import QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
-import { Prescription } from '@/models/Prescription';
-import { PrescriptionHealthcareAct } from '@/models/PrescriptionHealthcareAct';
-import HealthcareAct from '@/models/HealthcareAct';
-import Patient from '@/models/Patient';
-import { User } from '@/models/User';
-import { PrescriptionHealthcareactsStatus } from '@/resources/emuns/prescriptionHealthcareactsStatus';
-import HealthcareProfessional from '@/models/HealthcareProfessional';
-import Appointment from '@/models/Appointment';
+import { Prescription } from '@/infrastructure/database/models/Prescription.model';
+import { PrescriptionHealthcareAct } from '@/infrastructure/database/models/PrescriptionHealthcareAct.model';
+import HealthcareAct from '@/infrastructure/database/models/HealthcareAct.model';
+import Patient from '@/infrastructure/database/models/Patient.model';
+import { User } from '@/infrastructure/database/models/User.model';
+import { PrescriptionHealthcareactsStatus } from '@/shared/enums/prescription-status.enum';
+import HealthcareProfessional from '@/infrastructure/database/models/HealthcareProfessional.model';
+import Appointment from '@/infrastructure/database/models/Appointment.model';
 import { userIdMock } from '../resources/constantes';
 
 jest.mock('qrcode');
 jest.mock('uuid');
-jest.mock('@/models/Prescription');
-jest.mock('@/models/PrescriptionHealthcareAct');
-jest.mock('@/models/HealthcareAct');
-jest.mock('@/models/Patient');
-jest.mock('@/models/User');
-jest.mock('@/models/HealthcareProfessional');
-jest.mock('@/models/Appointment');
+jest.mock('@/infrastructure/database/models/Prescription.model');
+jest.mock('@/infrastructure/database/models/PrescriptionHealthcareAct.model');
+jest.mock('@/infrastructure/database/models/HealthcareAct.model');
+jest.mock('@/infrastructure/database/models/Patient.model');
+jest.mock('@/infrastructure/database/models/User.model');
+jest.mock('@/infrastructure/database/models/HealthcareProfessional.model');
+jest.mock('@/infrastructure/database/models/Appointment.model');
 
 describe('QRCode Controller', () => {
 

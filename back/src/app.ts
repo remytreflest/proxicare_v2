@@ -2,10 +2,10 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import swaggerUi from 'swagger-ui-express';
-import routes from '@/Controllers/base/baseController';
-import checkJwt from '@/middlewares/expressjwt.config';
-import extractUserId from '@/middlewares/extractUserId';
-import { swaggerSpec } from '@/config/swagger';
+import routes from '@/interfaces/http/routes';
+import checkJwt from '@/interfaces/http/middlewares/expressjwt.config';
+import extractUserId from '@/interfaces/http/middlewares/extractUserId';
+import { swaggerSpec } from '@/infrastructure/config/swagger';
 
 dotenv.config();
 

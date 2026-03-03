@@ -127,23 +127,35 @@ Impacts :
 ## 📁 Structure du projet
 
 ```
-nodejs-api/
-├── src/
-│   ├── config/           # Configuration (database, swagger)
-│   ├── Controllers/      # Controllers Express
-│   ├── middlewares/      # Middlewares (auth, extraction userId)
-│   ├── migrations/       # Migrations Sequelize
-│   ├── models/           # Modèles Sequelize
-│   ├── resources/        # Enums et helpers
-│   ├── swagger/          # Documentation Swagger (YAML)
-│   ├── tests/            # Tests unitaires et d'intégration
-│   ├── app.ts            # Configuration Express
-│   └── index.ts          # Point d'entrée
-├── scripts/              # Scripts utilitaires
-├── docker-compose.yml    # Configuration Docker
-├── Dockerfile            # Image de production
-├── Dockerfile.dev        # Image de développement
-└── package.json
+src/
+├── shared/                        ← utilitaires sans dépendance
+│   ├── enums/                     (4 fichiers, depuis resources/emuns/)
+│   └── helpers/                   (3 fichiers, depuis helpers/ et resources/helpers/)
+│
+├── domain/                        ← règles métier pures
+│   ├── entities/                  (7 interfaces TypeScript)
+│   └── repositories/              (9 interfaces — contrats de l'accès aux données)
+│
+├── application/use-cases/         ← logique métier extraite des controllers
+│   ├── register/                  (4 use cases)
+│   ├── healthcare/                (6 use cases)
+│   ├── prescription/              (3 use cases)
+│   ├── appointment/               (3 use cases)
+│   ├── qrcode/                    (2 use cases)
+│   └── structure/                 (1 use case)
+│
+├── infrastructure/                ← tout ce qui touche à l'extérieur
+│   ├── config/                    (database.ts + swagger.ts)
+│   ├── database/
+│   │   ├── models/                (10 modèles Sequelize *.model.ts + associations)
+│   │   ├── repositories/          (9 implémentations Sequelize des interfaces domain)
+│   │   └── migrations/            (copiées depuis src/migrations/)
+│   └── container.ts               (singletons injectés dans les controllers)
+│
+└── interfaces/http/               ← couche HTTP uniquement
+    ├── controllers/               (6 controllers allégés *.controller.ts)
+    ├── middlewares/               (2 middlewares déplacés)
+    └── routes/index.ts            (agrégation des routes)
 ```
 
 ## 🔒 Authentification

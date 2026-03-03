@@ -1,18 +1,18 @@
 import request from 'supertest';
 import app from '@/app.test';
-import { User } from '@/models/User';
-import Patient from '@/models/Patient';
-import HealthcareProfessional from '@/models/HealthcareProfessional';
-import { Structure } from '@/models/Structure';
-import { SpecialityEnum } from '@/resources/emuns/speciality';
-import { RolesEnum } from '@/resources/emuns/rolesEnum';
-import { addUserRole } from '@/resources/helpers/userHelper';
+import { User } from '@/infrastructure/database/models/User.model';
+import Patient from '@/infrastructure/database/models/Patient.model';
+import HealthcareProfessional from '@/infrastructure/database/models/HealthcareProfessional.model';
+import { Structure } from '@/infrastructure/database/models/Structure.model';
+import { SpecialityEnum } from '@/shared/enums/speciality.enum';
+import { RolesEnum } from '@/shared/enums/roles.enum';
+import { addUserRole } from '@/shared/helpers/user-roles.helper';
 
-jest.mock('@/models/User');
-jest.mock('@/models/Patient');
-jest.mock('@/models/HealthcareProfessional');
-jest.mock('@/models/Structure');
-jest.mock('@/resources/helpers/userHelper');
+jest.mock('@/infrastructure/database/models/User.model');
+jest.mock('@/infrastructure/database/models/Patient.model');
+jest.mock('@/infrastructure/database/models/HealthcareProfessional.model');
+jest.mock('@/infrastructure/database/models/Structure.model');
+jest.mock('@/shared/helpers/user-roles.helper');
 
 describe('Register Controller', () => {
   describe('GET /user', () => {
