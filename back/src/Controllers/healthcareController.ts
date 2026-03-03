@@ -148,6 +148,22 @@ router.get('/healthcare/acts', async (req: any, res: any) => {
 });
 
 /**
+ * @route GET /healthcare/professionals
+ * @desc Retourne la liste de tous les professionnels de santé avec leurs actes associés
+ * @access Protégé
+ */
+router.get('/healthcare/professionals', async (req: any, res: any) => {
+  try {
+    const professionals = await HealthcareProfessional.findAll({
+      include: [HealthcareAct],
+    });
+    return res.status(200).json(professionals);
+  } catch (error) {
+    return serverError(res, error);
+  }
+});
+
+/**
  * @route GET /healthcare/acts/user
  * @desc Retourne les actes de soin associés à un professionnel
  * @access Protégé

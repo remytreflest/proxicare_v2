@@ -262,6 +262,41 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
     },
 
     // ==================== ACTES DE SOINS ====================
+    '/api/healthcare/professionals': {
+      get: {
+        tags: ['Actes de soins'],
+        summary: 'Liste des professionnels avec leurs actes',
+        description: 'Retourne la liste de tous les professionnels de santé avec les actes de soins qu\'ils peuvent pratiquer',
+        security: [{ bearerAuth: [], userIdHeader: [] }],
+        responses: {
+          200: {
+            description: 'Liste des professionnels avec leurs actes',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'array',
+                  items: {
+                    allOf: [
+                      { $ref: '#/components/schemas/HealthcareProfessional' },
+                      {
+                        type: 'object',
+                        properties: {
+                          HealthcareActs: {
+                            type: 'array',
+                            items: { $ref: '#/components/schemas/HealthcareAct' },
+                          },
+                        },
+                      },
+                    ],
+                  },
+                },
+              },
+            },
+          },
+          500: { description: 'Erreur serveur' },
+        },
+      },
+    },
     '/api/healthcare/acts': {
       get: {
         tags: ['Actes de soins'],

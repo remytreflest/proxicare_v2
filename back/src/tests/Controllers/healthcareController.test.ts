@@ -167,6 +167,33 @@ describe('Healthcare Controller', () => {
     });
   });
 
+  describe('GET /healthcare/professionals', () => {
+    it('should return 200 with all professionals and their acts', async () => {
+      (HealthcareProfessional.findAll as jest.Mock).mockResolvedValue([
+        { Id: 1, Speciality: 'NURSE', HealthcareActs: [{ Id: 2, Name: 'Injection' }] },
+      ]);
+
+      const res = await request(app).get('/api/healthcare/professionals');
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveLength(1);
+    });
+
+    it('should return 200 with an empty list', async () => {
+      (HealthcareProfessional.findAll as jest.Mock).mockResolvedValue([]);
+
+      const res = await request(app).get('/api/healthcare/professionals');
+      expect(res.statusCode).toBe(200);
+      expect(res.body).toHaveLength(0);
+    });
+
+    it('should return 500 on error', async () => {
+      (HealthcareProfessional.findAll as jest.Mock).mockRejectedValue(new Error());
+
+      const res = await request(app).get('/api/healthcare/professionals');
+      expect(res.statusCode).toBe(500);
+    });
+  });
+
   describe('GET /healthcare/acts', () => {
     it('should return 200 with all acts', async () => {
       (HealthcareAct.findAll as jest.Mock).mockResolvedValue([]);
