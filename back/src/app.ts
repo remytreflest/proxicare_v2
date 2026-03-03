@@ -57,7 +57,7 @@ app.get('/healthcheck', (req, res) => {
 // Middlewares de sécurité
 // ========================
 // Permet l'accès à l'API uniquement si un token personnalisé x-userid est présent
-// app.use(extractUserId);
+app.use(extractUserId);
 // Permet l'accès à l'API uniquement si un token d'authentification est présent
 // Exception faite des routes déclarées dans le unless
 // app.use(AUTH_TOKEN_CHECK);

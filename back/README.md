@@ -7,10 +7,10 @@ API REST pour la gestion des soins médicaux à domicile.
 - [Fonctionnalités](#-fonctionnalités)
 - [Stack technique](#-stack-technique)
 - [Installation](#-installation)
-- [Docker](#-docker)
 - [Documentation API (Swagger)](#-documentation-api-swagger)
-- [Scripts disponibles](#-scripts-disponibles)
 - [Variables d'environnement](#-variables-denvironnement)
+- [Structure du projet](#-Structure-du-projet)
+- [Authentification](#-Authentification)
 
 ## ✨ Fonctionnalités
 
@@ -37,15 +37,17 @@ API REST pour la gestion des soins médicaux à domicile.
 ### Prérequis
 
 - Node.js 18+
-- PostgreSQL 14+
-- npm ou yarn
+- npm
 
-### Installation locale
+### Installation
 
 ```bash
 # Cloner le dépôt
 git clone <repository-url>
 cd nodejs-api
+
+# non nécessaire vu que l'on déploie sur docker mais utile pour éviter les erreurs visuelles dans le code car dépendances non installées
+npm install
 
 # Être dans le répertoire d'installation
 # Avoir docker desktop opérationnel
@@ -64,6 +66,22 @@ L'API sera accessible sur `http://localhost:3000`
 docker-compose down -v
 ```
 
+```bash
+# Lancer avec l'interface pgadmin pour se connecter visuellement à la base de données :
+docker-compose --profile dev up -d
+
+# Aller sur localhost:5050
+# Créer une connexion à un nouveau serveur :
+# Name	proxicare
+# Host	postgres
+# Port	5432
+# Maintenance database	proxicare
+# Username	DB_USER (.env)
+# Password	DB_PASSWORD (.env)
+```
+
+
+
 
 ## 🐳 Docker Logs
 
@@ -80,6 +98,15 @@ La documentation interactive de l'API est disponible via Swagger UI :
 
 - **URL** : `http://localhost:3000/api-docs`
 - **JSON OpenAPI** : `http://localhost:3000/api-docs.json`
+
+# MODE DEBUG
+
+Dans le .env, mettez la variable DEBUG=true
+Impacts : 
+-> Logs de retour en cas d'erreur plus clair
+-> Balise header Xuser-Id override par défaut : 123456
+    - Cela permet d'utiliser l'API sans nécessité de brancher le front (néanmoins besoin de faire l'étape de créer un utilisateur via la route api toujours nécessaire)
+
 
 ## ⚙️ Variables d'environnement
 

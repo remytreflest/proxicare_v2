@@ -114,8 +114,8 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
         properties: {
           id: { type: 'integer', example: 1 },
           socialSecurityNumber: { type: 'string', example: '1900175123456789' },
-          startDate: { type: 'string', format: 'date', example: '2025-01-01' },
-          endDate: { type: 'string', format: 'date', example: '2025-06-30' },
+          startDate: { type: 'string', format: 'date', example: '2026-04-06' },
+          endDate: { type: 'string', format: 'date', example: '2026-10-06' },
         },
       },
       Structure: {
@@ -425,8 +425,8 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
                 properties: {
                   patientId: { type: 'integer', example: 1 },
                   prescriptionHealthcareActId: { type: 'integer', example: 1 },
-                  appointmentStartDate: { type: 'string', format: 'date-time', example: '2025-02-10T09:00:00Z' },
-                  appointmentEndDate: { type: 'string', format: 'date-time', example: '2025-02-10T09:30:00Z' },
+                  appointmentStartDate: { type: 'string', format: 'date-time', example: '2026-04-07T09:00:00Z' },
+                  appointmentEndDate: { type: 'string', format: 'date-time', example: '2026-04-07T09:30:00Z' },
                 },
               },
             },
@@ -487,15 +487,16 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
                 required: ['socialSecurityNumber', 'startDate', 'endDate', 'acts'],
                 properties: {
                   socialSecurityNumber: { type: 'string', example: '190017512345678' },
-                  startDate: { type: 'string', format: 'date', example: '2025-01-01' },
-                  endDate: { type: 'string', format: 'date', example: '2025-06-30' },
+                  startDate: { type: 'string', format: 'date', example: '2026-04-06' },
+                  endDate: { type: 'string', format: 'date', example: '2026-10-06' },
                   acts: {
                     type: 'array',
                     items: {
                       type: 'object',
+                      required: ['id', 'occurrencesPerDay'],
                       properties: {
-                        healthcareActId: { type: 'integer', example: 1 },
-                        quantity: { type: 'integer', example: 30 },
+                        id: { type: 'integer', example: 1 },
+                        occurrencesPerDay: { type: 'integer', example: 2 },
                       },
                     },
                   },
