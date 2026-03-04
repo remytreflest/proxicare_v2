@@ -54,7 +54,6 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-proxicare_password}
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
     networks:
       - proxicare-network
     healthcheck:
