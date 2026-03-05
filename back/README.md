@@ -44,7 +44,7 @@ API REST pour la gestion des soins médicaux à domicile.
 ```bash
 # Cloner le dépôt
 git clone <repository-url>
-cd nodejs-api
+cd back
 
 # non nécessaire vu que l'on déploie sur docker mais utile pour éviter les erreurs visuelles dans le code car dépendances non installées
 npm install
