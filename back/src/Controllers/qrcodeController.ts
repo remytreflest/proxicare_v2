@@ -75,7 +75,7 @@ router.get('/qrcode/patient/:prescriptionHealthcareActId', async (req: any, res:
     const url = `${host}/validate-act/healthcareprofessional/${prescriptionHealthcareActId}/${token}`;
     const qrCodeDataUrl = await QRCode.toDataURL(url);
 
-    return res.status(201).json({ qrCodeDataUrl });
+    return res.status(201).json({ qrCodeDataUrl, validationUrl: url });
   } catch (err) {
     return serverError(res, err);
   }

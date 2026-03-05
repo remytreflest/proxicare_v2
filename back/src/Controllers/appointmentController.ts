@@ -55,6 +55,11 @@ router.get('/appointments', async (req: any, res: any) => {
     const appointments = await Appointment.findAll({
       where: { [Op.or]: conditions },
       order: [['AppointmentStartDate', 'ASC']],
+      include: [
+        { model: Patient, include: [{ model: User, attributes: ['FirstName', 'LastName', 'Email'] }] },
+        { model: HealthcareProfessional, include: [{ model: User, attributes: ['FirstName', 'LastName', 'Email'] }] },
+        { model: PrescriptionHealthcareAct, include: [{ model: HealthcareAct }] },
+      ],
     });
 
     return res.status(200).json(appointments);

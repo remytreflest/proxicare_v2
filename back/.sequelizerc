@@ -11,6 +11,5 @@ const base = hasTsNode ? 'src' : 'dist';
 module.exports = {
   config: path.resolve('config', 'config.js'),
   'models-path': path.resolve(base, 'infrastructure', 'database', 'models'),
-  'seeders-path': path.resolve(base, 'seeders'),
   'migrations-path': path.resolve(base, 'infrastructure', 'database', 'migrations'),
 };

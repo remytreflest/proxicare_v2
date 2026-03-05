@@ -11,6 +11,8 @@ import { PrescriptionHealthcareAct } from '../PrescriptionHealthcareAct';
 export const initModels = () => {
 
   Appointment.belongsTo(PrescriptionHealthcareAct, { foreignKey: 'PrescriptionHealthcareActId' });
+  Appointment.belongsTo(Patient, { foreignKey: 'PatientId' });
+  Appointment.belongsTo(HealthcareProfessional, { foreignKey: 'HealthcareProfessionalId' });
 
   // Relations
   User.hasOne(Patient, { foreignKey: 'UserId' });
