@@ -24,14 +24,8 @@ export function OnboardingRedirect() {
 			return;
 		}
 
-		if (!isOnboarded && hasRole(user, RolesEnum.PATIENT)) {
-			router.push('/onboarding/patient');
-
-			return;
-		}
-
-		if (!isOnboarded && hasRole(user, RolesEnum.HEALTHCAREPROFESSIONAL)) {
-			router.push('/onboarding/professional');
+		if (!isOnboarded) {
+			router.push('/onboarding/role');
 
 			return;
 		}
