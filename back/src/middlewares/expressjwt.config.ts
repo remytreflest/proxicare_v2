@@ -9,11 +9,11 @@ const checkJwt = expressjwt({
       cache: true,
       rateLimit: true,
       jwksRequestsPerMinute: 5,
-      jwksUri: process.env.EXPRESSJWT_SECRET_JWKSURI || '',
+      jwksUri: process.env.JWKS_URI || '',
     }),
-    audience: process.env.EXPRESSJWT_SECRET_AUDIENCE || '',
-    issuer: process.env.EXPRESSJWT_SECRET_ISSUER || '',
+    audience: process.env.AUTH0_AUDIENCE || '',
+    issuer: process.env.ISSUER || '',
     algorithms: ['RS256'],
   });
-
+  
 export default checkJwt;
