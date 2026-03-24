@@ -1,6 +1,6 @@
 'use client';
 
-import { Camera, Mail, MapPin } from 'lucide-react';
+import { Mail, MapPin } from 'lucide-react';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -43,15 +43,6 @@ export function ProfileHeader({ user, role }: ProfileHeaderProps) {
 								{getUserInitials(user)}
 							</AvatarFallback>
 						</Avatar>
-
-						<Button
-							size="icon"
-							variant="secondary"
-							className="absolute right-0 bottom-0 h-8 w-8 rounded-full shadow-md"
-						>
-							<Camera className="h-4 w-4" />
-							<span className="sr-only">Changer la photo</span>
-						</Button>
 					</div>
 				</div>
 

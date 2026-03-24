@@ -2,10 +2,6 @@
 
 import { usePathname } from 'next/navigation';
 
-import { Bell, Search } from 'lucide-react';
-
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import type { User } from '@/lib/types';
 
 const pageTitles: Record<string, string> = {
@@ -55,19 +51,6 @@ export function DashboardHeader({ user }: DashboardHeaderProps) {
 							{getGreeting()}, {user.FirstName}
 						</p>
 					)}
-				</div>
-
-				<div className="flex items-center gap-4">
-					<div className="relative hidden md:flex">
-						<Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-						<Input placeholder="Rechercher..." className="bg-muted/50 w-64 pl-9" />
-					</div>
-
-					<Button variant="ghost" size="icon" className="relative">
-						<Bell className="h-5 w-5" />
-						<span className="bg-destructive absolute top-1 right-1 h-2 w-2 rounded-full" />
-						<span className="sr-only">Notifications</span>
-					</Button>
 				</div>
 			</div>
 		</header>
