@@ -23,12 +23,6 @@ services:
         condition: service_healthy
     networks:
       - proxicare-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
 
   api:
     build:
@@ -96,8 +90,6 @@ services:
       - certbot-conf:/etc/letsencrypt:ro
       - certbot-www:/var/www/certbot:ro
     depends_on:
-      front:
-        condition: service_healthy
       api:
         condition: service_healthy
     networks:
