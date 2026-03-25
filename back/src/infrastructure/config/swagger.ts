@@ -19,7 +19,7 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
     `,
     contact: {
       name: 'Proxicare Support',
-      email: 'support@proxicare.com',
+      email: 'support@proxicare.ovh',
     },
   },
   servers: [
@@ -28,7 +28,7 @@ Le header \`X-Userid\` doit être présent dans chaque requête.
       description: 'Serveur de développement',
     },
     {
-      url: 'https://api.proxicare.com',
+      url: 'https://api.proxicare.ovh',
       description: 'Serveur de production',
     },
   ],
