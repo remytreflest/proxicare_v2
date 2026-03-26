@@ -1,0 +1,29 @@
+name: SonarCloud Analysis
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  sonar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: back
+
+      - name: Run tests & coverage
+        run: npx jest
+        working-directory: back
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@master
+        with:
+          projectBaseDir: back
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
