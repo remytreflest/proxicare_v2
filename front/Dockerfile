@@ -19,6 +19,9 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 
+ARG BACKEND_URL=http://localhost:3000
+ENV BACKEND_URL=$BACKEND_URL
+
 RUN pnpm build
 
 FROM node:20-alpine AS production
