@@ -34,14 +34,20 @@ app.use(cors({
 // ========================
 // Documentation Swagger
 // ========================
-// Accessible sans authentification à /api-docs
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, {
+// Accessible sans authentification à /api-docs et /api/api-docs
+const swaggerSetup = swaggerUi.setup(swaggerSpec, {
   customCss: '.swagger-ui .topbar { display: none }',
   customSiteTitle: 'Proxicare API Documentation',
-}));
+});
+app.use('/api-docs', swaggerUi.serve, swaggerSetup);
+app.use('/api/api-docs', swaggerUi.serve, swaggerSetup);
 
 // Endpoint pour récupérer le JSON OpenAPI
 app.get('/api-docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
+app.get('/api/api-docs.json', (_req, res) => {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
