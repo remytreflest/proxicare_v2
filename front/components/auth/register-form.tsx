@@ -16,7 +16,7 @@ import { useAuth } from '@/lib/auth-context';
 export function RegisterForm() {
 	const router = useRouter();
 	const { user: auth0User } = useUser();
-	const { needsRegistration, isLoading: authLoading, refetchUser } = useAuth();
+	const { needsRegistration, isLoading: authLoading, refetchUser, user } = useAuth();
 
 	const [firstName, setFirstName] = useState('');
 	const [lastName, setLastName] = useState('');
@@ -33,10 +33,10 @@ export function RegisterForm() {
 	}, [auth0User]);
 
 	useEffect(() => {
-		if (!authLoading && !needsRegistration) {
+		if (!authLoading && !needsRegistration && user) {
 			router.push('/onboarding');
 		}
-	}, [authLoading, needsRegistration, router]);
+	}, [authLoading, needsRegistration, user, router]);
 
 	const handleSubmit = async (event: React.SyntheticEvent) => {
 		event.preventDefault();

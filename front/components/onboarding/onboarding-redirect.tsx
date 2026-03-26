@@ -8,10 +8,12 @@ import { RolesEnum } from '@/lib/types';
 import { hasRole } from '@/lib/utils';
 
 export function OnboardingRedirect() {
-	const { user, isOnboarded, needsRegistration } = useAuth();
+	const { user, isOnboarded, needsRegistration, isLoading } = useAuth();
 	const router = useRouter();
 
 	useEffect(() => {
+		if (isLoading) return;
+
 		if (needsRegistration) {
 			router.push('/register');
 
@@ -31,7 +33,7 @@ export function OnboardingRedirect() {
 		}
 
 		router.push('/dashboard');
-	}, [user, isOnboarded, needsRegistration, router]);
+	}, [user, isOnboarded, needsRegistration, isLoading, router]);
 
 	return null;
 }
