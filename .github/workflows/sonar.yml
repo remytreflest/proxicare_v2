@@ -23,7 +23,5 @@ jobs:
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarqube-scan-action@master
-        with:
-          projectBaseDir: back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
