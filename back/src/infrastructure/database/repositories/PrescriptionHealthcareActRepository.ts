@@ -35,6 +35,13 @@ export class PrescriptionHealthcareActRepository implements IPrescriptionHealthc
     });
   }
 
+  async markAsPerformed(id: number): Promise<void> {
+    await PrescriptionHealthcareAct.update(
+      { Status: 'PERFORMED' },
+      { where: { Id: id } },
+    );
+  }
+
   async create(data: {
     PrescriptionId: number;
     HealthcareActId: number;

@@ -42,7 +42,7 @@ export class ValidateQrCode {
       throw { status: 403, message: "Vous n'êtes pas le professionnel assigné à cette prescription." };
     }
 
-    await prescriptionAct.update({ Status: PrescriptionHealthcareactsStatus.PERFORMED });
+    await this.prescriptionActRepo.markAsPerformed(prescriptionHealthcareActId);
 
     const user = prescriptionAct.Prescription.Patient.User;
     return {
