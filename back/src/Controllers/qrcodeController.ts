@@ -71,7 +71,7 @@ router.get('/qrcode/patient/:prescriptionHealthcareActId', async (req: any, res:
       ValidateTokenLimitTime: limit,
     });
 
-    const host = process.env.LOCAL_IP_SAME_WIFI ? process.env.FRONT_URL_LOCAL : process.env.FRONT_URL;
+    const host = process.env.FRONT_URL;
     const url = `${host}/validate-act/healthcareprofessional/${prescriptionHealthcareActId}/${token}`;
     const qrCodeDataUrl = await QRCode.toDataURL(url);
 
