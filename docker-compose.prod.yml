@@ -38,6 +38,7 @@ services:
       NODE_ENV: production
       DEBUG: "false"
       PORT: 3000
+      FRONT_URL: https://proxicare.ovh
       DB_HOST: postgres
       DB_PORT: 5432
       DB_NAME: ${DB_NAME:-proxicare}
