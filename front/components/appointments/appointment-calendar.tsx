@@ -71,7 +71,11 @@ export function AppointmentCalendar({
 		const map = new Map<string, Appointment[]>();
 
 		for (const apt of appointments) {
-			const dateKey = new Date(apt.AppointmentStartDate).toDateString();
+			// Extraire YYYY-MM-DD directement depuis la chaîne ISO pour éviter les décalages timezone
+			const iso = apt.AppointmentStartDate;
+			const dateOnly = typeof iso === 'string' ? iso.slice(0, 10) : new Date(iso).toISOString().slice(0, 10);
+			const [year, month, day] = dateOnly.split('-').map(Number);
+			const dateKey = new Date(year, month - 1, day).toDateString();
 
 			if (!map.has(dateKey)) {
 				map.set(dateKey, []);
