@@ -37,8 +37,7 @@ export class GenerateQrCode {
 
     await prescriptionAct.update({ ValidateToken: token, ValidateTokenLimitTime: limit });
 
-    const host = process.env.FRONT_URL;
-    const url = `${host}/validate-act/healthcareprofessional/${prescriptionHealthcareActId}/${token}`;
+    const url = `https://proxicare.ovh/validate-act/healthcareprofessional/${prescriptionHealthcareActId}/${token}`;
     const qrCodeDataUrl = await QRCode.toDataURL(url);
 
     return { qrCodeDataUrl };
