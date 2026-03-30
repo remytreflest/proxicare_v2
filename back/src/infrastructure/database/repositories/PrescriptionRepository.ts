@@ -20,7 +20,21 @@ export class PrescriptionRepository implements IPrescriptionRepository {
   async findAllBySSN(ssn: string): Promise<Prescription[]> {
     return Prescription.findAll({
       where: { SocialSecurityNumber: ssn },
-      include: [{ model: PrescriptionHealthcareAct, include: [HealthcareAct] }],
+      include: [
+        {
+          model: Patient,
+          as: 'Patient',
+          required: false,
+          on: {
+            '$Prescription.SocialSecurityNumber$': { [Op.eq]: col('Patient.SocialSecurityNumber') },
+          },
+          include: [{ model: User, as: 'User', attributes: ['FirstName', 'LastName', 'Email'] }],
+        },
+        {
+          model: PrescriptionHealthcareAct,
+          include: [HealthcareAct, { model: Appointment, as: 'Appointments' }],
+        },
+      ],
     });
   }
 
