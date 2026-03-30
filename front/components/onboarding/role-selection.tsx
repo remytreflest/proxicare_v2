@@ -34,9 +34,7 @@ export function RoleSelection() {
 
 			<div className="grid gap-4 md:grid-cols-2">
 				<Card
-					className={`cursor-pointer transition-all ${
-						selectedRole === RolesEnum.PATIENT ? 'ring-2 ring-primary' : ''
-					}`}
+					className={`cursor-pointer transition-all ${selectedRole === RolesEnum.PATIENT ? 'ring-primary ring-2' : ''}`}
 					onClick={() => handleRoleSelect(RolesEnum.PATIENT)}
 				>
 					<CardHeader>
@@ -44,7 +42,7 @@ export function RoleSelection() {
 						<CardDescription>Accédez à vos soins et rendez-vous</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<p className="text-sm text-muted-foreground">
+						<p className="text-muted-foreground text-sm">
 							Gérez vos prescriptions, consultez vos rendez-vous et communiquez avec vos soignants.
 						</p>
 					</CardContent>
@@ -52,7 +50,7 @@ export function RoleSelection() {
 
 				<Card
 					className={`cursor-pointer transition-all ${
-						selectedRole === RolesEnum.HEALTHCAREPROFESSIONAL ? 'ring-2 ring-primary' : ''
+						selectedRole === RolesEnum.HEALTHCAREPROFESSIONAL ? 'ring-primary ring-2' : ''
 					}`}
 					onClick={() => handleRoleSelect(RolesEnum.HEALTHCAREPROFESSIONAL)}
 				>
@@ -61,7 +59,7 @@ export function RoleSelection() {
 						<CardDescription>Gérez vos patients et actes médicaux</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<p className="text-sm text-muted-foreground">
+						<p className="text-muted-foreground text-sm">
 							Suivez vos patients, validez les actes médicaux et gérez vos prescriptions.
 						</p>
 					</CardContent>

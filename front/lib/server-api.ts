@@ -81,7 +81,10 @@ export async function serverFetchHealthcareProfessionals(): Promise<HealthcarePr
 export async function serverValidateQrCode(
 	prescriptionHealthcareActId: number,
 	token: string,
-): Promise<{ success: true; data: { message: string; healthcareAct?: string; patientName?: string } } | { success: false; error: string }> {
+): Promise<
+	| { success: true; data: { message: string; healthcareAct?: string; patientName?: string } }
+	| { success: false; error: string }
+> {
 	try {
 		const data = await serverFetch<{ message: string; healthcareAct?: string; patientName?: string }>(
 			`/validate/healthcareprofessional/${String(prescriptionHealthcareActId)}/${token}`,

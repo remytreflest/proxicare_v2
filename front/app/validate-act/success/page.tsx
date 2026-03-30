@@ -48,17 +48,25 @@ export default async function ValidateSuccessPage({ searchParams }: ValidateSucc
 						</div>
 					)}
 
-					<div className="bg-green-500/10 rounded-lg p-3 text-center">
+					<div className="rounded-lg bg-green-500/10 p-3 text-center">
 						<p className="text-xs font-medium text-green-600">
-							Validé le {new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+							Validé le{' '}
+							{new Date().toLocaleDateString('fr-FR', {
+								weekday: 'long',
+								day: 'numeric',
+								month: 'long',
+								year: 'numeric',
+							})}
 						</p>
 					</div>
 				</CardContent>
 			</Card>
 
-			<Button asChild className="w-full max-w-sm">
-				<Link href="/dashboard">Retour au tableau de bord</Link>
-			</Button>
+			<Button
+				className="w-full max-w-sm"
+				render={<Link href="/dashboard">Retour au tableau de bord</Link>}
+				nativeButton={false}
+			/>
 		</div>
 	);
 }

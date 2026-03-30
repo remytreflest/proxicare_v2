@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Camera, CheckCircle2, Loader2, XCircle } from 'lucide-react';
 import jsQR from 'jsqr';
+import { Camera, CheckCircle2, Loader2, XCircle } from 'lucide-react';
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { validateQrCodeToken } from '@/lib/api';
@@ -140,7 +140,7 @@ export function QRScannerDialog({ open, onOpenChange, onSuccess }: QRScannerDial
 								<div className="border-primary absolute top-0 left-0 h-8 w-8 rounded-tl-lg border-t-2 border-l-2" />
 								<div className="border-primary absolute top-0 right-0 h-8 w-8 rounded-tr-lg border-t-2 border-r-2" />
 								<div className="border-primary absolute bottom-0 left-0 h-8 w-8 rounded-bl-lg border-b-2 border-l-2" />
-								<div className="border-primary absolute right-0 bottom-0 h-8 w-8 rounded-br-lg border-b-2 border-r-2" />
+								<div className="border-primary absolute right-0 bottom-0 h-8 w-8 rounded-br-lg border-r-2 border-b-2" />
 							</div>
 						</div>
 					)}
