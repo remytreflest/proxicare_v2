@@ -43,7 +43,7 @@ export function QRValidationPageContent({ initialTodayAppointments, user, role }
 								<p className="text-foreground font-medium">Validation sécurisée</p>
 								<p className="text-muted-foreground text-sm">
 									Présentez ce QR code à votre professionnel de santé pour valider votre soin. Le code se renouvelle
-									automatiquement toutes les 30 secondes pour garantir la sécurité.
+									automatiquement toutes les 60 secondes pour garantir la sécurité.
 								</p>
 							</div>
 						</div>
@@ -80,7 +80,7 @@ export function QRValidationPageContent({ initialTodayAppointments, user, role }
 							<p className="text-foreground font-medium">Scanner de validation</p>
 							<p className="text-muted-foreground text-sm">
 								Scannez le QR code présenté par votre patient pour valider l'acte de soin. Chaque code est unique et
-								valide pendant 30 secondes.
+								valide pendant 60 secondes.
 							</p>
 						</div>
 					</div>
