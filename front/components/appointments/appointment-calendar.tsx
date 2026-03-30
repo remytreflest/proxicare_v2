@@ -223,16 +223,22 @@ export function AppointmentCalendar({
 							>
 								{date.getDate()}
 								{hasAppointments && (
-									<div className="mt-0.5 flex gap-0.5">
-										{dayAppointments.slice(0, 3).map((apt) => (
-											<div
-												key={apt.Id}
-												className={cn(
-													'h-1.5 w-1.5 rounded-full',
-													isSelected(date) ? 'bg-primary-foreground' : getStatusColor(apt.Status),
-												)}
-											/>
-										))}
+									<div className="mt-0.5 flex items-center gap-0.5">
+										{dayAppointments.length <= 4 ? (
+											dayAppointments.map((apt) => (
+												<div
+													key={apt.Id}
+													className={cn(
+														'h-1.5 w-1.5 rounded-full',
+														isSelected(date) ? 'bg-primary-foreground' : getStatusColor(apt.Status),
+													)}
+												/>
+											))
+										) : (
+											<span className={cn('text-[10px] font-semibold leading-none', isSelected(date) ? 'text-primary-foreground' : 'text-primary')}>
+												{dayAppointments.length}
+											</span>
+										)}
 									</div>
 								)}
 							</button>
