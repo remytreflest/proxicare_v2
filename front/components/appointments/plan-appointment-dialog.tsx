@@ -48,7 +48,9 @@ export function PlanAppointmentDialog({ open, onOpenChange, prescription, onCrea
 	const selectedPrescription = prescriptions.find((p) => String(p.Id) === selectedPrescriptionId);
 	const plannableActs =
 		selectedPrescription?.PrescriptionHealthcareActs?.filter(
-			(act) => act.Status === PrescriptionHealthcareActStatus.TO_BE_PLANNED,
+			(act) =>
+				act.Status === PrescriptionHealthcareActStatus.TO_BE_PLANNED ||
+				act.Status === PrescriptionHealthcareActStatus.PLANNED,
 		) ?? [];
 
 	const loadPrescriptions = async () => {
@@ -56,7 +58,9 @@ export function PlanAppointmentDialog({ open, onOpenChange, prescription, onCrea
 			const data = await fetchProfessionalPrescriptions();
 			const withPlannableActs = data.filter((prescriptionWithActs) =>
 				prescriptionWithActs.PrescriptionHealthcareActs?.some(
-					(act) => act.Status === PrescriptionHealthcareActStatus.TO_BE_PLANNED,
+					(act) =>
+						act.Status === PrescriptionHealthcareActStatus.TO_BE_PLANNED ||
+						act.Status === PrescriptionHealthcareActStatus.PLANNED,
 				),
 			);
 			setPrescriptions(withPlannableActs);
