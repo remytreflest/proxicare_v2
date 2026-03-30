@@ -18,7 +18,14 @@ interface QRValidationPageContentProps {
 
 export function QRValidationPageContent({ initialTodayAppointments, user, role }: QRValidationPageContentProps) {
 	const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
-	const todayAppointments = initialTodayAppointments;
+	const [appointments, setAppointments] = useState(initialTodayAppointments);
+
+	const handleActValidated = (appointmentId: string) => {
+		setAppointments((prev) => prev.filter((a) => String(a.Id) !== appointmentId));
+		setSelectedAppointmentId(null);
+	};
+
+	const todayAppointments = appointments;
 
 	if (!user || !role) {
 		return null;
@@ -48,6 +55,7 @@ export function QRValidationPageContent({ initialTodayAppointments, user, role }
 						appointments={todayAppointments}
 						selectedAppointmentId={selectedAppointmentId}
 						onSelectAppointment={setSelectedAppointmentId}
+						onActValidated={handleActValidated}
 					/>
 
 					<PendingValidations

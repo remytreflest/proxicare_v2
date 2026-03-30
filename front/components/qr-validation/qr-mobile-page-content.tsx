@@ -15,8 +15,14 @@ interface MobileQRPageContentProps {
 
 export function MobileQRPageContent({ initialTodayAppointments }: MobileQRPageContentProps) {
 	const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | null>(null);
+	const [appointments, setAppointments] = useState(initialTodayAppointments);
 
-	const todayAppointments = initialTodayAppointments;
+	const handleActValidated = (appointmentId: string) => {
+		setAppointments((prev) => prev.filter((a) => String(a.Id) !== appointmentId));
+		setSelectedAppointmentId(null);
+	};
+
+	const todayAppointments = appointments;
 
 	return (
 		<div className="from-primary/5 to-background min-h-screen bg-linear-to-b">
@@ -50,6 +56,7 @@ export function MobileQRPageContent({ initialTodayAppointments }: MobileQRPageCo
 					appointments={todayAppointments}
 					selectedAppointmentId={selectedAppointmentId}
 					onSelectAppointment={setSelectedAppointmentId}
+					onActValidated={handleActValidated}
 				/>
 
 				<div className="mt-6 space-y-3">

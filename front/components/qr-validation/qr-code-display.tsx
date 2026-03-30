@@ -25,13 +25,14 @@ interface QRCodeDisplayProps {
 	appointments: Appointment[];
 	selectedAppointmentId: string | null;
 	onSelectAppointment: (id: string | null) => void;
+	onActValidated?: (appointmentId: string) => void;
 }
 
 type QRStatus = 'active' | 'error' | 'expired' | 'expiring' | 'loading' | 'validated';
 
 const QR_VALIDITY_SECONDS = 15;
 
-export function QRCodeDisplay({ appointments, selectedAppointmentId, onSelectAppointment }: QRCodeDisplayProps) {
+export function QRCodeDisplay({ appointments, selectedAppointmentId, onSelectAppointment, onActValidated }: QRCodeDisplayProps) {
 	const [timeLeft, setTimeLeft] = useState(QR_VALIDITY_SECONDS);
 	const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
 	const [status, setStatus] = useState<QRStatus>('loading');
@@ -58,8 +59,14 @@ export function QRCodeDisplay({ appointments, selectedAppointmentId, onSelectApp
 			setQrCodeDataUrl(result.qrCodeDataUrl);
 			setTimeLeft(QR_VALIDITY_SECONDS);
 			setStatus('active');
-		} catch {
-			setStatus('error');
+		} catch (e) {
+			const message = e instanceof Error ? e.message : '';
+			if (message.includes('déjà été validé')) {
+				setStatus('validated');
+				setTimeout(() => onActValidated?.(String(selectedAppointment.Id)), 1500);
+			} else {
+				setStatus('error');
+			}
 		}
 	}, [selectedAppointment]);
 
@@ -77,7 +84,7 @@ export function QRCodeDisplay({ appointments, selectedAppointmentId, onSelectApp
 		const interval = setInterval(() => {
 			setTimeLeft((previous) => {
 				if (previous <= 1) {
-					setStatus('expired');
+					loadQRCode();
 
 					return 0;
 				}
