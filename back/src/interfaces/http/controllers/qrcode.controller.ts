@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { serverError } from '@/shared/helpers/server-error.helper';
 import { GenerateQrCode } from '@/application/use-cases/qrcode/GenerateQrCode.usecase';
 import { ValidateQrCode } from '@/application/use-cases/qrcode/ValidateQrCode.usecase';
-import { prescriptionActRepo, healthcareProfessionalRepo } from '@/infrastructure/container';
+import { prescriptionActRepo, healthcareProfessionalRepo, appointmentRepo } from '@/infrastructure/container';
 
 const router = Router();
 
@@ -22,7 +22,7 @@ router.get('/validate/healthcareprofessional/:prescriptionHealthcareActId/:token
     console.log(req.params);
     const id = parseInt(req.params.prescriptionHealthcareActId);
     const { token } = req.params;
-    const result = await new ValidateQrCode(prescriptionActRepo, healthcareProfessionalRepo).execute(id, token, req.userId);
+    const result = await new ValidateQrCode(prescriptionActRepo, healthcareProfessionalRepo, appointmentRepo).execute(id, token, req.userId);
     return res.status(200).json(result);
   } catch (e: any) {
     if (e.status) return res.status(e.status).json({ message: e.message });

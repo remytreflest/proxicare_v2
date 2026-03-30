@@ -12,4 +12,5 @@ export interface IAppointmentRepository {
     AppointmentEndDate: string;
   }): Promise<Appointment>;
   delete(appointment: Appointment): Promise<void>;
+  markAsPerformed(prescriptionHealthcareActId: number): Promise<void>;
 }

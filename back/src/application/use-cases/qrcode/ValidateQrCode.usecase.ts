@@ -1,11 +1,13 @@
 import { IPrescriptionHealthcareActRepository } from '@/domain/repositories/IPrescriptionHealthcareActRepository';
 import { IHealthcareProfessionalRepository } from '@/domain/repositories/IHealthcareProfessionalRepository';
+import { IAppointmentRepository } from '@/domain/repositories/IAppointmentRepository';
 import { PrescriptionHealthcareactsStatus } from '@/shared/enums/prescription-status.enum';
 
 export class ValidateQrCode {
   constructor(
     private readonly prescriptionActRepo: IPrescriptionHealthcareActRepository,
     private readonly professionalRepo: IHealthcareProfessionalRepository,
+    private readonly appointmentRepo: IAppointmentRepository,
   ) {}
 
   async execute(
@@ -43,6 +45,7 @@ export class ValidateQrCode {
     }
 
     await this.prescriptionActRepo.markAsPerformed(prescriptionHealthcareActId);
+    await this.appointmentRepo.markAsPerformed(prescriptionHealthcareActId);
 
     const user = prescriptionAct.Prescription.Patient.User;
     return {

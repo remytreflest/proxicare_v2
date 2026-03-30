@@ -32,4 +32,11 @@ export class AppointmentRepository implements IAppointmentRepository {
   async delete(appointment: Appointment): Promise<void> {
     await appointment.destroy();
   }
+
+  async markAsPerformed(prescriptionHealthcareActId: number): Promise<void> {
+    await Appointment.update(
+      { Status: 'PERFORMED' },
+      { where: { PrescriptionHealthcareActId: prescriptionHealthcareActId } },
+    );
+  }
 }
