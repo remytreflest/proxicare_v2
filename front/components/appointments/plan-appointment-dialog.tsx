@@ -39,7 +39,6 @@ function getUpcomingDays(prescription: Prescription, count = 14): Date[] {
 	today.setHours(0, 0, 0, 0);
 	const end = new Date(prescription.EndDate);
 	end.setHours(23, 59, 59, 999);
-
 	const start = new Date(prescription.StartDate);
 	start.setHours(0, 0, 0, 0);
 
@@ -72,9 +71,9 @@ export function PlanAppointmentDialog({
 }: PlanAppointmentDialogProps) {
 	const [prescriptions, setPrescriptions] = useState<Prescription[]>(prescriptionProp ? [prescriptionProp] : []);
 	const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string | null>(
-		prescriptionProp ? String(prescriptionProp.Id) : '',
+		prescriptionProp ? String(prescriptionProp.Id) : null,
 	);
-	const [selectedActIds, setSelectedActIds] = useState<Set<number>>(new Set());
+	const [selectedActId, setSelectedActId] = useState<number | null>(null);
 	const [selectedDateKeys, setSelectedDateKeys] = useState<Set<string>>(new Set());
 	const [startTime, setStartTime] = useState('08:00');
 	const [endTime, setEndTime] = useState('08:30');
@@ -99,12 +98,21 @@ export function PlanAppointmentDialog({
 		[selectedPrescription],
 	);
 
-	const totalToCreate = selectedActIds.size * selectedDateKeys.size;
+	const selectedAct = plannableActs.find((a) => a.Id === selectedActId) ?? null;
+
+	// Nombre restant dynamique : on soustrait les jours déjà cochés
+	const dynamicRemaining = useMemo(() => {
+		if (!selectedAct || !selectedPrescription) return null;
+		const base = getRemainingCount(selectedAct, selectedPrescription);
+		return Math.max(0, base - selectedDateKeys.size);
+	}, [selectedAct, selectedPrescription, selectedDateKeys]);
+
+	const totalToCreate = selectedActId !== null ? selectedDateKeys.size : 0;
 
 	useEffect(() => {
 		if (!open) return;
 
-		setSelectedActIds(new Set());
+		setSelectedActId(null);
 		setSelectedDateKeys(new Set());
 		setStartTime('08:00');
 		setEndTime('08:30');
@@ -114,7 +122,7 @@ export function PlanAppointmentDialog({
 			setPrescriptions([prescriptionProp]);
 			setSelectedPrescriptionId(String(prescriptionProp.Id));
 		} else {
-			setSelectedPrescriptionId('');
+			setSelectedPrescriptionId(null);
 			setIsFetching(true);
 			fetchProfessionalPrescriptions()
 				.then((data) => {
@@ -131,27 +139,33 @@ export function PlanAppointmentDialog({
 		}
 	}, [open, prescriptionProp]);
 
-	const toggleAct = (actId: number) => {
-		setSelectedActIds((prev) => {
-			const next = new Set(prev);
-			if (next.has(actId)) next.delete(actId);
-			else next.add(actId);
-			return next;
-		});
+	const handleSelectAct = (actId: number) => {
+		if (selectedActId === actId) {
+			setSelectedActId(null);
+			setSelectedDateKeys(new Set());
+		} else {
+			setSelectedActId(actId);
+			setSelectedDateKeys(new Set());
+		}
 	};
 
 	const toggleDate = (key: string) => {
+		if (!selectedActId) return;
+		const base = selectedAct && selectedPrescription ? getRemainingCount(selectedAct, selectedPrescription) : 0;
 		setSelectedDateKeys((prev) => {
 			const next = new Set(prev);
-			if (next.has(key)) next.delete(key);
-			else next.add(key);
+			if (next.has(key)) {
+				next.delete(key);
+			} else if (next.size < base) {
+				next.add(key);
+			}
 			return next;
 		});
 	};
 
 	const handleSubmit = async () => {
-		if (!selectedPrescription || selectedActIds.size === 0 || selectedDateKeys.size === 0 || !startTime || !endTime) {
-			setError('Veuillez sélectionner au moins un acte, un jour et une plage horaire.');
+		if (!selectedPrescription || selectedActId === null || selectedDateKeys.size === 0 || !startTime || !endTime) {
+			setError('Veuillez sélectionner un acte, au moins un jour et une plage horaire.');
 			return;
 		}
 
@@ -172,25 +186,23 @@ export function PlanAppointmentDialog({
 		const [startH, startM] = startTime.split(':').map(Number);
 		const [endH, endM] = endTime.split(':').map(Number);
 
-		const tasks = [...selectedActIds].flatMap((actId) =>
-			[...selectedDateKeys].map((dateKey) => {
-				const [y, m, d] = dateKey.split('-').map(Number);
-				const start = new Date(y, m - 1, d, startH, startM);
-				const end = new Date(y, m - 1, d, endH, endM);
-				return createAppointment({
-					patientId,
-					prescriptionHealthcareActId: actId,
-					appointmentStartDate: start.toISOString(),
-					appointmentEndDate: end.toISOString(),
-				});
-			}),
-		);
+		const tasks = [...selectedDateKeys].map((dateKey) => {
+			const [y, m, d] = dateKey.split('-').map(Number);
+			const start = new Date(y, m - 1, d, startH, startM);
+			const end = new Date(y, m - 1, d, endH, endM);
+			return createAppointment({
+				patientId,
+				prescriptionHealthcareActId: selectedActId,
+				appointmentStartDate: start.toISOString(),
+				appointmentEndDate: end.toISOString(),
+			});
+		});
 
 		const results = await Promise.all(tasks);
 		const errorCount = results.filter((r) => r.error).length;
 
 		if (errorCount > 0 && errorCount === results.length) {
-			setError(`Aucun rendez-vous n'a pu être créé. Vérifiez les dates et les autorisations.`);
+			setError("Aucun rendez-vous n'a pu être créé. Vérifiez les dates et les autorisations.");
 			setIsSubmitting(false);
 			return;
 		}
@@ -204,7 +216,7 @@ export function PlanAppointmentDialog({
 		setIsSubmitting(false);
 	};
 
-	const isFormValid = selectedActIds.size > 0 && selectedDateKeys.size > 0 && !!startTime && !!endTime;
+	const isFormValid = selectedActId !== null && selectedDateKeys.size > 0 && !!startTime && !!endTime;
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
@@ -212,7 +224,7 @@ export function PlanAppointmentDialog({
 				<DialogHeader>
 					<DialogTitle>Planifier des rendez-vous</DialogTitle>
 					<DialogDescription>
-						Sélectionnez les actes, les jours et l&apos;heure pour créer plusieurs rendez-vous en une fois.
+						Sélectionnez un acte, les jours et l&apos;heure pour créer plusieurs rendez-vous en une fois.
 					</DialogDescription>
 				</DialogHeader>
 
@@ -229,10 +241,10 @@ export function PlanAppointmentDialog({
 									<p className="text-muted-foreground text-sm">Aucune prescription avec des actes à planifier.</p>
 								) : (
 									<Select
-										value={selectedPrescriptionId}
+										value={selectedPrescriptionId ?? ''}
 										onValueChange={(v) => {
 											setSelectedPrescriptionId(v);
-											setSelectedActIds(new Set());
+											setSelectedActId(null);
 											setSelectedDateKeys(new Set());
 										}}
 									>
@@ -260,31 +272,35 @@ export function PlanAppointmentDialog({
 						{selectedPrescription && (
 							<>
 								<div className="space-y-2">
-									<Label>Actes à planifier</Label>
+									<Label>Acte à planifier</Label>
 									{plannableActs.length === 0 ? (
 										<p className="text-muted-foreground text-sm">Aucun acte à planifier.</p>
 									) : (
 										<div className="space-y-2">
 											{plannableActs.map((act) => {
-												const remaining = getRemainingCount(act, selectedPrescription);
-												const isSelected = selectedActIds.has(act.Id);
+												const base = getRemainingCount(act, selectedPrescription);
+												const isSelected = selectedActId === act.Id;
+												const isDisabled = selectedActId !== null && !isSelected;
+												// Si cet acte est sélectionné, afficher le restant dynamique
+												const displayRemaining = isSelected && dynamicRemaining !== null ? dynamicRemaining : base;
 
 												return (
 													<button
 														key={act.Id}
 														type="button"
-														onClick={() => toggleAct(act.Id)}
+														onClick={() => handleSelectAct(act.Id)}
+														disabled={isDisabled}
 														className={cn(
 															'flex w-full items-center justify-between rounded-lg border px-3 py-2.5 text-left text-sm transition-all',
-															isSelected
-																? 'border-primary bg-primary/5'
-																: 'border-border hover:border-primary/50',
+															isSelected && 'border-primary bg-primary/5',
+															isDisabled && 'cursor-not-allowed opacity-40',
+															!isSelected && !isDisabled && 'border-border hover:border-primary/50',
 														)}
 													>
 														<div className="flex items-center gap-2">
 															<div
 																className={cn(
-																	'flex h-4 w-4 shrink-0 items-center justify-center rounded border',
+																	'flex h-4 w-4 shrink-0 items-center justify-center rounded-full border',
 																	isSelected ? 'border-primary bg-primary' : 'border-muted-foreground',
 																)}
 															>
@@ -298,10 +314,10 @@ export function PlanAppointmentDialog({
 														<span
 															className={cn(
 																'text-xs font-medium',
-																remaining === 0 ? 'text-muted-foreground' : 'text-primary',
+																displayRemaining === 0 ? 'text-muted-foreground' : 'text-primary',
 															)}
 														>
-															{remaining} restant{remaining > 1 ? 's' : ''}
+															{displayRemaining} restant{displayRemaining > 1 ? 's' : ''}
 														</span>
 													</button>
 												);
@@ -310,68 +326,84 @@ export function PlanAppointmentDialog({
 									)}
 								</div>
 
-								<div className="space-y-2">
-									<Label>Jours</Label>
-									{upcomingDays.length === 0 ? (
-										<p className="text-muted-foreground text-sm">Aucun jour disponible dans la période de la prescription.</p>
-									) : (
-										<div className="flex flex-wrap gap-2">
-											{upcomingDays.map((date) => {
-												const key = `${String(date.getFullYear())}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-												const isSelected = selectedDateKeys.has(key);
-												const isToday = date.toDateString() === new Date().toDateString();
+								{selectedActId !== null && (
+									<div className="space-y-2">
+										<Label>
+											Jours
+											{selectedAct && selectedPrescription && (
+												<span className="text-muted-foreground ml-2 text-xs font-normal">
+													(max {getRemainingCount(selectedAct, selectedPrescription)} jour
+													{getRemainingCount(selectedAct, selectedPrescription) > 1 ? 's' : ''})
+												</span>
+											)}
+										</Label>
+										{upcomingDays.length === 0 ? (
+											<p className="text-muted-foreground text-sm">Aucun jour disponible.</p>
+										) : (
+											<div className="flex flex-wrap gap-2">
+												{upcomingDays.map((date) => {
+													const key = `${String(date.getFullYear())}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+													const isSelected = selectedDateKeys.has(key);
+													const isToday = date.toDateString() === new Date().toDateString();
+													const base = selectedAct && selectedPrescription ? getRemainingCount(selectedAct, selectedPrescription) : 0;
+													const isDisabled = !isSelected && selectedDateKeys.size >= base;
 
-												return (
-													<button
-														key={key}
-														type="button"
-														onClick={() => toggleDate(key)}
-														className={cn(
-															'flex flex-col items-center rounded-lg border px-3 py-2 text-xs transition-all',
-															isSelected
-																? 'border-primary bg-primary text-primary-foreground'
-																: isToday
-																	? 'border-primary/50 bg-primary/5 text-primary'
-																	: 'border-border hover:border-primary/50',
-														)}
-													>
-														<span className="font-medium">{DAYS_FR[date.getDay()]}</span>
-														<span>
-															{String(date.getDate()).padStart(2, '0')}/{String(date.getMonth() + 1).padStart(2, '0')}
-														</span>
-													</button>
-												);
-											})}
+													return (
+														<button
+															key={key}
+															type="button"
+															onClick={() => toggleDate(key)}
+															disabled={isDisabled}
+															className={cn(
+																'flex flex-col items-center rounded-lg border px-3 py-2 text-xs transition-all',
+																isSelected
+																	? 'border-primary bg-primary text-primary-foreground'
+																	: isToday && !isDisabled
+																		? 'border-primary/50 bg-primary/5 text-primary'
+																		: 'border-border',
+																isDisabled && 'cursor-not-allowed opacity-30',
+																!isSelected && !isDisabled && 'hover:border-primary/50',
+															)}
+														>
+															<span className="font-medium">{DAYS_FR[date.getDay()]}</span>
+															<span>
+																{String(date.getDate()).padStart(2, '0')}/{String(date.getMonth() + 1).padStart(2, '0')}
+															</span>
+														</button>
+													);
+												})}
+											</div>
+										)}
+									</div>
+								)}
+
+								{selectedActId !== null && (
+									<div className="grid grid-cols-2 gap-3">
+										<div className="space-y-2">
+											<Label htmlFor="start-time">Heure de début</Label>
+											<Input
+												id="start-time"
+												type="time"
+												value={startTime}
+												onChange={(e) => setStartTime(e.target.value)}
+											/>
 										</div>
-									)}
-								</div>
-
-								<div className="grid grid-cols-2 gap-3">
-									<div className="space-y-2">
-										<Label htmlFor="start-time">Heure de début</Label>
-										<Input
-											id="start-time"
-											type="time"
-											value={startTime}
-											onChange={(e) => setStartTime(e.target.value)}
-										/>
+										<div className="space-y-2">
+											<Label htmlFor="end-time">Heure de fin</Label>
+											<Input
+												id="end-time"
+												type="time"
+												value={endTime}
+												onChange={(e) => setEndTime(e.target.value)}
+											/>
+										</div>
 									</div>
-									<div className="space-y-2">
-										<Label htmlFor="end-time">Heure de fin</Label>
-										<Input
-											id="end-time"
-											type="time"
-											value={endTime}
-											onChange={(e) => setEndTime(e.target.value)}
-										/>
-									</div>
-								</div>
+								)}
 
 								{totalToCreate > 0 && (
 									<p className="text-muted-foreground text-sm">
-										{totalToCreate} rendez-vous seront créés ({selectedActIds.size} acte
-										{selectedActIds.size > 1 ? 's' : ''} × {selectedDateKeys.size} jour
-										{selectedDateKeys.size > 1 ? 's' : ''})
+										{totalToCreate} rendez-vous seront créés ({totalToCreate} jour
+										{totalToCreate > 1 ? 's' : ''})
 									</p>
 								)}
 							</>
