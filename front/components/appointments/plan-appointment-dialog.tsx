@@ -71,7 +71,7 @@ export function PlanAppointmentDialog({
 	onCreated,
 }: PlanAppointmentDialogProps) {
 	const [prescriptions, setPrescriptions] = useState<Prescription[]>(prescriptionProp ? [prescriptionProp] : []);
-	const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string>(
+	const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string | null>(
 		prescriptionProp ? String(prescriptionProp.Id) : '',
 	);
 	const [selectedActIds, setSelectedActIds] = useState<Set<number>>(new Set());
@@ -82,7 +82,7 @@ export function PlanAppointmentDialog({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const selectedPrescription = prescriptions.find((p) => String(p.Id) === selectedPrescriptionId);
+	const selectedPrescription = prescriptions.find((p) => String(p.Id) === (selectedPrescriptionId ?? ''));
 
 	const plannableActs = useMemo(
 		() =>
