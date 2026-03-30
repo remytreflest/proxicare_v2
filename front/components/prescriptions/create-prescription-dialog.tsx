@@ -148,7 +148,7 @@ export function CreatePrescriptionDialog({
 							<SelectContent>
 								{professionals.map((pro) => (
 									<SelectItem key={pro.Id} value={String(pro.Id)}>
-										Professionnel #{pro.Id} — {pro.Speciality ?? 'N/A'}
+										{pro.User ? `${pro.User.FirstName} ${pro.User.LastName}` : `Professionnel #${pro.Id}`} — {pro.Speciality ?? 'N/A'}
 									</SelectItem>
 								))}
 							</SelectContent>

@@ -1,6 +1,7 @@
 import HealthcareProfessional from '@/infrastructure/database/models/HealthcareProfessional.model';
 import HealthcareAct from '@/infrastructure/database/models/HealthcareAct.model';
 import { Structure } from '@/infrastructure/database/models/Structure.model';
+import { User } from '@/infrastructure/database/models/User.model';
 import { IHealthcareProfessionalRepository } from '@/domain/repositories/IHealthcareProfessionalRepository';
 
 export class HealthcareProfessionalRepository implements IHealthcareProfessionalRepository {
@@ -27,7 +28,7 @@ export class HealthcareProfessionalRepository implements IHealthcareProfessional
   }
 
   async findAllWithActs(): Promise<HealthcareProfessional[]> {
-    return HealthcareProfessional.findAll({ include: [HealthcareAct] });
+    return HealthcareProfessional.findAll({ include: [HealthcareAct, User] });
   }
 
   async create(data: { UserId: string; Speciality: string; StructureId: number; IDN: string }): Promise<HealthcareProfessional> {
