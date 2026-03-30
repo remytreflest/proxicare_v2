@@ -1,12 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-
 import Link from 'next/link';
 
 import { Calendar, CheckCircle2, Clock, FileText, QrCode, Stethoscope, X, XCircle } from 'lucide-react';
-
-import { QRScannerDialog } from '@/components/appointments/qr-scanner-dialog';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -33,8 +29,6 @@ const statusConfig: Record<string, { label: string; icon: typeof Clock; classNam
 };
 
 export function AppointmentDetails({ appointment, userRole, onUpdate, onClose }: AppointmentDetailsProps) {
-	const [isScannerOpen, setIsScannerOpen] = useState(false);
-
 	if (!appointment) {
 		return (
 			<Card className="sticky top-24 border-0 shadow-sm">
@@ -189,25 +183,14 @@ export function AppointmentDetails({ appointment, userRole, onUpdate, onClose }:
 							)}
 
 							{userRole === 'professional' && (
-								<>
-									<Button className="w-full gap-2" onClick={() => setIsScannerOpen(true)}>
-										<CheckCircle2 className="h-4 w-4" />
-										Valider l&apos;acte
-									</Button>
-									<QRScannerDialog
-										open={isScannerOpen}
-										onOpenChange={setIsScannerOpen}
-										onSuccess={() => onUpdate(String(appointment.Id), 'validated')}
-									/>
-									<Button
-										variant="outline"
-										className="text-destructive hover:bg-destructive/10 w-full gap-2 bg-transparent"
-										onClick={() => onUpdate(String(appointment.Id), 'cancelled')}
-									>
-										<XCircle className="h-4 w-4" />
-										Annuler le rendez-vous
-									</Button>
-								</>
+								<Button
+									variant="outline"
+									className="text-destructive hover:bg-destructive/10 w-full gap-2 bg-transparent"
+									onClick={() => onUpdate(String(appointment.Id), 'cancelled')}
+								>
+									<XCircle className="h-4 w-4" />
+									Annuler le rendez-vous
+								</Button>
 							)}
 
 							{(userRole === 'structure' || userRole === 'admin') && (

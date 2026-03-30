@@ -77,3 +77,17 @@ export async function serverFetchUserActs(): Promise<HealthcareAct[]> {
 export async function serverFetchHealthcareProfessionals(): Promise<HealthcareProfessional[]> {
 	return serverFetch<HealthcareProfessional[]>('/healthcare/professionals').catch(() => []);
 }
+
+export async function serverValidateQrCode(
+	prescriptionHealthcareActId: number,
+	token: string,
+): Promise<{ success: true; data: { message: string; healthcareAct?: string; patientName?: string } } | { success: false; error: string }> {
+	try {
+		const data = await serverFetch<{ message: string; healthcareAct?: string; patientName?: string }>(
+			`/validate/healthcareprofessional/${String(prescriptionHealthcareActId)}/${token}`,
+		);
+		return { success: true, data };
+	} catch (e) {
+		return { success: false, error: e instanceof Error ? e.message : 'Erreur inconnue' };
+	}
+}
