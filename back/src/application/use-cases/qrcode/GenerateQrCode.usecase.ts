@@ -33,7 +33,7 @@ export class GenerateQrCode {
     }
 
     const token = uuidv4();
-    const limit = new Date(Date.now() + 15 * 1000);
+    const limit = new Date(Date.now() + 60 * 1000);
 
     await prescriptionAct.update({ ValidateToken: token, ValidateTokenLimitTime: limit });
 
