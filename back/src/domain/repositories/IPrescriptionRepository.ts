@@ -9,4 +9,5 @@ export interface IPrescriptionRepository {
   }): Promise<Prescription>;
   findAllBySSN(ssn: string): Promise<Prescription[]>;
   findAllForProfessionalStructures(structureIds: number[]): Promise<Prescription[]>;
+  findAllByProfessionalId(professionalId: number): Promise<Prescription[]>;
 }

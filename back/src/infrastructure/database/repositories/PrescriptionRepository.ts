@@ -24,6 +24,27 @@ export class PrescriptionRepository implements IPrescriptionRepository {
     });
   }
 
+  async findAllByProfessionalId(professionalId: number): Promise<Prescription[]> {
+    return Prescription.findAll({
+      where: { HealthcareProfessionalId: professionalId },
+      include: [
+        {
+          model: Patient,
+          as: 'Patient',
+          required: false,
+          on: {
+            '$Prescription.SocialSecurityNumber$': { [Op.eq]: col('Patient.SocialSecurityNumber') },
+          },
+          include: [{ model: User, as: 'User', attributes: ['FirstName', 'LastName', 'Email'] }],
+        },
+        {
+          model: PrescriptionHealthcareAct,
+          include: [HealthcareAct, { model: Appointment, as: 'Appointments' }],
+        },
+      ],
+    });
+  }
+
   async findAllForProfessionalStructures(structureIds: number[]): Promise<Prescription[]> {
     return Prescription.findAll({
       where: { StartDate: { [Op.gte]: new Date() } },
