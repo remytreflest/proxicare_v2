@@ -35,14 +35,11 @@ export class ValidateQrCode {
       throw { status: 401, message: 'Token invalide ou expiré.' };
     }
 
-    const professional = await this.professionalRepo.findByUserIdWithStructures(userId);
+    const professional = await this.professionalRepo.findByUserId(userId);
     if (!professional) throw { status: 403, message: 'Soignant non autorisé.' };
 
-    const patientStructureId = prescriptionAct.Prescription.Patient.StructureId!;
-    const professionalStructureIds = professional.Structures?.map(s => s.Id);
-
-    if (!professionalStructureIds || !professionalStructureIds.includes(patientStructureId)) {
-      throw { status: 403, message: "Vous n'êtes pas lié à ce patient." };
+    if (prescriptionAct.Prescription.HealthcareProfessionalId !== professional.Id) {
+      throw { status: 403, message: "Vous n'êtes pas le professionnel assigné à cette prescription." };
     }
 
     await prescriptionAct.update({ Status: PrescriptionHealthcareactsStatus.PERFORMED });

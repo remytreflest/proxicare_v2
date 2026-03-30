@@ -36,8 +36,12 @@ export function AppointmentsPageContent({ initialAppointments, user, role }: App
 	const handleAppointmentUpdate = async (appointmentId: string, status: 'cancelled' | 'validated') => {
 		if (status === 'cancelled') {
 			await deleteAppointment(Number(appointmentId));
-
 			setAppointments((previous) => previous.filter((a) => a.Id !== Number(appointmentId)));
+		}
+
+		if (status === 'validated') {
+			const updated = await fetchAppointments();
+			setAppointments(updated);
 		}
 
 		setSelectedAppointment(null);
