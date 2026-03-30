@@ -45,11 +45,11 @@ export class CreateAppointment {
     const professional = await this.professionalRepo.findByUserId(data.userId);
     if (!professional) throw { status: 404, message: 'Vous êtes pas un professionnel de santé' };
 
-    const act = await this.actRepo.findById(professional.Id);
-    if (!act) throw { status: 404, message: "L'acte n'a pas été trouvé" };
-
     const prescriptionAct = await this.prescriptionActRepo.findById(data.prescriptionHealthcareActId);
     if (!prescriptionAct) throw { status: 404, message: "L'acte de prescription est introuvable." };
+
+    const act = await this.actRepo.findById(prescriptionAct.HealthcareActId);
+    if (!act) throw { status: 404, message: "L'acte n'a pas été trouvé" };
 
     const hasActLink = await this.linkRepo.findOne(professional.Id, prescriptionAct.HealthcareActId);
     if (!hasActLink) {
