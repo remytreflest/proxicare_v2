@@ -1,6 +1,8 @@
 import Appointment from '@/infrastructure/database/models/Appointment.model';
 import { IAppointmentRepository } from '@/domain/repositories/IAppointmentRepository';
 import { Op } from 'sequelize';
+import { PrescriptionHealthcareAct } from '@/infrastructure/database/models/PrescriptionHealthcareAct.model';
+import HealthcareAct from '@/infrastructure/database/models/HealthcareAct.model';
 
 export class AppointmentRepository implements IAppointmentRepository {
   async findAllForUser(patientId?: number, professionalId?: number): Promise<Appointment[]> {
@@ -10,6 +12,12 @@ export class AppointmentRepository implements IAppointmentRepository {
 
     return Appointment.findAll({
       where: { [Op.or]: conditions },
+      include: [
+        {
+          model: PrescriptionHealthcareAct,
+          include: [{ model: HealthcareAct }],
+        },
+      ],
       order: [['AppointmentStartDate', 'ASC']],
     });
   }
