@@ -71,6 +71,8 @@ export function AppointmentCalendar({
 		const map = new Map<string, Appointment[]>();
 
 		for (const apt of appointments) {
+			if (apt.Status === AppointmentStatus.PERFORMED || apt.Status === AppointmentStatus.CANCELLED) continue;
+
 			// Extraire YYYY-MM-DD directement depuis la chaîne ISO pour éviter les décalages timezone
 			const iso = apt.AppointmentStartDate;
 			const dateOnly = typeof iso === 'string' ? iso.slice(0, 10) : new Date(iso).toISOString().slice(0, 10);
