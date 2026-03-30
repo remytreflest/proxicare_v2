@@ -91,6 +91,10 @@ export function PrescriptionList({ prescriptions, selectedId, onSelect }: Prescr
 									<div className="mb-2 flex items-start justify-between gap-2">
 										<div>
 											<h3 className="text-foreground font-medium">{patientName}</h3>
+											<p className="text-muted-foreground text-xs">
+												{new Date(prescription.StartDate).toLocaleDateString('fr-FR')} →{' '}
+												{new Date(prescription.EndDate).toLocaleDateString('fr-FR')}
+											</p>
 										</div>
 
 										<Badge variant="secondary" className={status.className}>
