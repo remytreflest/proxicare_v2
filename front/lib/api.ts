@@ -132,7 +132,7 @@ export function createPrescription(body: {
 	healthcareProfessionalId: number;
 	startDate: string;
 	endDate: string;
-	acts: { id: number; occurrencesPerDay: number }[];
+	acts: { id: number; occurrencesPerDay: number; totalDays?: number }[];
 }) {
 	return apiFetchData<{ message: string }>('/prescriptions', {
 		method: 'POST',

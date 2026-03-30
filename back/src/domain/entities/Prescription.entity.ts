@@ -9,4 +9,5 @@ export interface IPrescription {
 export interface IPrescriptionActInput {
   id: number;
   occurrencesPerDay: number;
+  totalDays?: number;
 }

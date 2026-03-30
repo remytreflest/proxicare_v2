@@ -9,6 +9,7 @@ export interface IPrescriptionHealthcareActRepository {
     PrescriptionId: number;
     HealthcareActId: number;
     OccurrencesPerDay: number;
+    TotalDays?: number | null;
     Status: string;
   }): Promise<PrescriptionHealthcareAct>;
 }

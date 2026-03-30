@@ -71,6 +71,7 @@ export class CreatePrescription {
         PrescriptionId: prescription.Id,
         HealthcareActId: act.id,
         OccurrencesPerDay: act.occurrencesPerDay,
+        TotalDays: act.totalDays ?? null,
         Status: PrescriptionHealthcareactsStatus.TO_BE_PLANNED,
       });
     }

@@ -96,7 +96,7 @@ export function CreatePrescriptionDialog({
 				healthcareProfessionalId: Number(healthcareProfessionalId),
 				startDate: validFrom,
 				endDate: validUntil,
-				acts: selectedActs.map((a) => ({ id: a.actId, occurrencesPerDay: a.occurrencesPerDay })),
+				acts: selectedActs.map((a) => ({ id: a.actId, occurrencesPerDay: a.occurrencesPerDay, totalDays: a.totalDays })),
 			});
 
 			onOpenChange(false);

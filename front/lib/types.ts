@@ -100,6 +100,7 @@ export interface PrescriptionHealthcareAct {
 	PrescriptionId: number;
 	HealthcareActId: number;
 	OccurrencesPerDay: number;
+	TotalDays: number | null;
 	Status: PrescriptionHealthcareActStatus;
 	ValidateToken: string | null;
 	ValidateTokenLimitTime: string | null;
