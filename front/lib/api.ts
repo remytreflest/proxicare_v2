@@ -157,9 +157,3 @@ export function fetchQRCode(prescriptionHealthcareActId: number, appointmentId: 
 		`/qrcode/patient/${String(prescriptionHealthcareActId)}/${String(appointmentId)}`,
 	);
 }
-
-export function validateQrCodeToken(prescriptionHealthcareActId: number, appointmentId: number, token: string) {
-	return apiFetch<{ message: string; healthcareAct?: string; patientName?: string; validatedAt: string }>(
-		`/validate/healthcareprofessional/${String(prescriptionHealthcareActId)}/${String(appointmentId)}/${token}`,
-	);
-}
