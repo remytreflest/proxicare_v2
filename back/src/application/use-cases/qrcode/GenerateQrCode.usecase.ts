@@ -6,7 +6,7 @@ import { PrescriptionHealthcareactsStatus } from '@/shared/enums/prescription-st
 export class GenerateQrCode {
   constructor(private readonly prescriptionActRepo: IPrescriptionHealthcareActRepository) {}
 
-  async execute(prescriptionHealthcareActId: number, userId: string): Promise<{ qrCodeDataUrl: string }> {
+  async execute(prescriptionHealthcareActId: number, appointmentId: number, userId: string): Promise<{ qrCodeDataUrl: string }> {
     const prescriptionAct = await this.prescriptionActRepo.findByIdWithPatient(prescriptionHealthcareActId);
     if (!prescriptionAct) throw { status: 404, message: 'Acte de prescription introuvable.' };
 
@@ -25,11 +25,15 @@ export class GenerateQrCode {
       throw { status: 403, message: 'Accès interdit. Ce soin ne vous appartient pas.' };
     }
 
-    const validAppointments = prescriptionAct.Appointments?.filter(
-      a => a.AppointmentEndDate >= new Date()
-    );
-    if (!validAppointments || validAppointments.length === 0) {
-      throw { status: 400, message: 'Aucun rendez-vous actif pour ce soin.' };
+    const appointment = prescriptionAct.Appointments?.find(a => a.Id === appointmentId);
+    if (!appointment) {
+      throw { status: 404, message: 'Rendez-vous introuvable pour ce soin.' };
+    }
+    if (appointment.Status === 'PERFORMED') {
+      throw { status: 400, message: 'Ce rendez-vous a déjà été validé.' };
+    }
+    if (appointment.Status === 'CANCELLED') {
+      throw { status: 400, message: 'Ce rendez-vous a été annulé.' };
     }
 
     const token = uuidv4();
@@ -37,7 +41,7 @@ export class GenerateQrCode {
 
     await prescriptionAct.update({ ValidateToken: token, ValidateTokenLimitTime: limit });
 
-    const url = `${process.env.FRONT_URL}/validate-act/healthcareprofessional/${prescriptionHealthcareActId}/${token}`;
+    const url = `${process.env.FRONT_URL}/validate-act/healthcareprofessional/${prescriptionHealthcareActId}/${appointmentId}/${token}`;
     const qrCodeDataUrl = await QRCode.toDataURL(url);
 
     return { qrCodeDataUrl };

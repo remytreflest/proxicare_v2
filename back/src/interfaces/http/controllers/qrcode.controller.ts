@@ -6,10 +6,11 @@ import { prescriptionActRepo, healthcareProfessionalRepo, appointmentRepo } from
 
 const router = Router();
 
-router.get('/qrcode/patient/:prescriptionHealthcareActId', async (req: any, res: any) => {
+router.get('/qrcode/patient/:prescriptionHealthcareActId/:appointmentId', async (req: any, res: any) => {
   try {
     const id = parseInt(req.params.prescriptionHealthcareActId);
-    const result = await new GenerateQrCode(prescriptionActRepo).execute(id, req.userId);
+    const appointmentId = parseInt(req.params.appointmentId);
+    const result = await new GenerateQrCode(prescriptionActRepo).execute(id, appointmentId, req.userId);
     return res.status(201).json(result);
   } catch (e: any) {
     if (e.status) return res.status(e.status).json({ message: e.message });
@@ -17,12 +18,12 @@ router.get('/qrcode/patient/:prescriptionHealthcareActId', async (req: any, res:
   }
 });
 
-router.get('/validate/healthcareprofessional/:prescriptionHealthcareActId/:token', async (req: any, res: any) => {
+router.get('/validate/healthcareprofessional/:prescriptionHealthcareActId/:appointmentId/:token', async (req: any, res: any) => {
   try {
-    console.log(req.params);
     const id = parseInt(req.params.prescriptionHealthcareActId);
+    const appointmentId = parseInt(req.params.appointmentId);
     const { token } = req.params;
-    const result = await new ValidateQrCode(prescriptionActRepo, healthcareProfessionalRepo, appointmentRepo).execute(id, token, req.userId);
+    const result = await new ValidateQrCode(prescriptionActRepo, healthcareProfessionalRepo, appointmentRepo).execute(id, appointmentId, token, req.userId);
     return res.status(200).json(result);
   } catch (e: any) {
     if (e.status) return res.status(e.status).json({ message: e.message });

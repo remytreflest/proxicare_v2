@@ -1,24 +1,25 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
-import { AlertTriangle, Loader2 } from 'lucide-react';
+import { AlertTriangle } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { serverValidateQrCode } from '@/lib/server-api';
 
 interface ValidateActPageProps {
-	params: Promise<{ prescriptionHealthcareActId: string; token: string }>;
+	params: Promise<{ prescriptionHealthcareActId: string; appointmentId: string; token: string }>;
 }
 
 export default async function ValidateActPage({ params }: ValidateActPageProps) {
-	const { prescriptionHealthcareActId, token } = await params;
+	const { prescriptionHealthcareActId, appointmentId, token } = await params;
 	const id = parseInt(prescriptionHealthcareActId);
+	const apptId = parseInt(appointmentId);
 
-	if (isNaN(id)) {
+	if (isNaN(id) || isNaN(apptId)) {
 		return <ErrorView message="Lien invalide." />;
 	}
 
-	const result = await serverValidateQrCode(id, token);
+	const result = await serverValidateQrCode(id, apptId, token);
 
 	if (result.success) {
 		const { healthcareAct, patientName } = result.data;

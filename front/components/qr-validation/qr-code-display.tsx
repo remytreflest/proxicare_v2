@@ -54,7 +54,7 @@ export function QRCodeDisplay({ appointments, selectedAppointmentId, onSelectApp
 		setQrCodeDataUrl('');
 
 		try {
-			const result = await fetchQRCode(selectedAppointment.PrescriptionHealthcareActId);
+			const result = await fetchQRCode(selectedAppointment.PrescriptionHealthcareActId, selectedAppointment.Id);
 
 			setQrCodeDataUrl(result.qrCodeDataUrl);
 			setTimeLeft(QR_VALIDITY_SECONDS);

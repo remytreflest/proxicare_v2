@@ -12,6 +12,7 @@ export class ValidateQrCode {
 
   async execute(
     prescriptionHealthcareActId: number,
+    appointmentId: number,
     token: string,
     userId: string,
   ): Promise<{ message: string; healthcareAct?: string; patientName?: string; validatedAt: Date }> {
@@ -44,8 +45,11 @@ export class ValidateQrCode {
       throw { status: 403, message: "Vous n'êtes pas le professionnel assigné à cette prescription." };
     }
 
-    await this.prescriptionActRepo.markAsPerformed(prescriptionHealthcareActId);
-    await this.appointmentRepo.markAsPerformed(prescriptionHealthcareActId);
+    await this.appointmentRepo.markAsPerformed(appointmentId);
+    const remainingPlanned = await this.appointmentRepo.countPlanned(prescriptionHealthcareActId);
+    if (remainingPlanned === 0) {
+      await this.prescriptionActRepo.markAsPerformed(prescriptionHealthcareActId);
+    }
 
     const user = prescriptionAct.Prescription.Patient.User;
     return {

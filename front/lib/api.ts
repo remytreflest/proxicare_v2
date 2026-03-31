@@ -152,14 +152,14 @@ export function fetchAppointments() {
 	return apiFetchData<Appointment[]>('/appointments').catch(() => []);
 }
 
-export function fetchQRCode(prescriptionHealthcareActId: number) {
+export function fetchQRCode(prescriptionHealthcareActId: number, appointmentId: number) {
 	return apiFetchData<{ qrCodeDataUrl: string; validationUrl: string }>(
-		`/qrcode/patient/${String(prescriptionHealthcareActId)}`,
+		`/qrcode/patient/${String(prescriptionHealthcareActId)}/${String(appointmentId)}`,
 	);
 }
 
-export function validateQrCodeToken(prescriptionHealthcareActId: number, token: string) {
+export function validateQrCodeToken(prescriptionHealthcareActId: number, appointmentId: number, token: string) {
 	return apiFetch<{ message: string; healthcareAct?: string; patientName?: string; validatedAt: string }>(
-		`/validate/healthcareprofessional/${String(prescriptionHealthcareActId)}/${token}`,
+		`/validate/healthcareprofessional/${String(prescriptionHealthcareActId)}/${String(appointmentId)}/${token}`,
 	);
 }
