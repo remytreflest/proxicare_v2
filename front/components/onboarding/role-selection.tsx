@@ -5,12 +5,10 @@ import { useRouter } from 'next/navigation';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useAuth } from '@/lib/auth-context';
 import { RolesEnum } from '@/lib/types';
 
 export function RoleSelection() {
 	const router = useRouter();
-	const { user } = useAuth();
 	const [selectedRole, setSelectedRole] = useState<RolesEnum | null>(null);
 
 	const handleRoleSelect = (role: RolesEnum) => {

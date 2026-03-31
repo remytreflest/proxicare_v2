@@ -12,10 +12,11 @@ interface ValidateActPageProps {
 
 export default async function ValidateActPage({ params }: ValidateActPageProps) {
 	const { prescriptionHealthcareActId, appointmentId, token } = await params;
-	const id = parseInt(prescriptionHealthcareActId);
-	const apptId = parseInt(appointmentId);
 
-	if (isNaN(id) || isNaN(apptId)) {
+	const id = Number.parseInt(prescriptionHealthcareActId);
+	const apptId = Number.parseInt(appointmentId);
+
+	if (Number.isNaN(id) || Number.isNaN(apptId)) {
 		return <ErrorView message="Lien invalide." />;
 	}
 
@@ -38,9 +39,11 @@ function ErrorView({ message }: { message: string }) {
 				<div className="bg-destructive/10 rounded-full p-6">
 					<AlertTriangle className="text-destructive h-12 w-12" />
 				</div>
+
 				<h1 className="text-xl font-semibold">Validation échouée</h1>
 				<p className="text-muted-foreground max-w-xs text-sm">{message}</p>
 			</div>
+
 			<Button
 				variant="outline"
 				render={<Link href="/dashboard">Retour au tableau de bord</Link>}

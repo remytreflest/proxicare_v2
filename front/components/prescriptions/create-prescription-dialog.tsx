@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { createPrescription } from '@/lib/api';
-import type { HealthcareAct, HealthcareProfessional } from '@/lib/types';
+import { Speciality, type HealthcareAct, type HealthcareProfessional } from '@/lib/types';
 
 interface CreatePrescriptionDialogProps {
 	open: boolean;
@@ -96,7 +96,11 @@ export function CreatePrescriptionDialog({
 				healthcareProfessionalId: Number(healthcareProfessionalId),
 				startDate: validFrom,
 				endDate: validUntil,
-				acts: selectedActs.map((a) => ({ id: a.actId, occurrencesPerDay: a.occurrencesPerDay, totalDays: a.totalDays })),
+				acts: selectedActs.map((selectedAct) => ({
+					id: selectedAct.actId,
+					occurrencesPerDay: selectedAct.occurrencesPerDay,
+					totalDays: selectedAct.totalDays,
+				})),
 			});
 
 			onOpenChange(false);
@@ -127,7 +131,7 @@ export function CreatePrescriptionDialog({
 							id="ssn"
 							placeholder="Ex : 1 85 05 78 006 084 36"
 							value={socialSecurityNumber}
-							onChange={(event_) => setSocialSecurityNumber(event_.target.value)}
+							onChange={(event) => setSocialSecurityNumber(event.target.value)}
 						/>
 					</div>
 
@@ -135,9 +139,9 @@ export function CreatePrescriptionDialog({
 						<Label htmlFor="professional">Professionnel de santé</Label>
 						<Select
 							value={healthcareProfessionalId}
-							onValueChange={(v) => {
-								if (v) {
-									setHealthcareProfessionalId(v);
+							onValueChange={(value) => {
+								if (value) {
+									setHealthcareProfessionalId(value);
 								}
 							}}
 						>
@@ -146,10 +150,12 @@ export function CreatePrescriptionDialog({
 							</SelectTrigger>
 
 							<SelectContent>
-								{professionals.map((pro) => (
-									<SelectItem key={pro.Id} value={String(pro.Id)}>
-										{pro.User ? `${pro.User.FirstName} ${pro.User.LastName}` : `Professionnel #${pro.Id}`} —{' '}
-										{pro.Speciality ?? 'N/A'}
+								{professionals.map((professional) => (
+									<SelectItem key={professional.Id} value={String(professional.Id)}>
+										{professional.User
+											? `${professional.User.FirstName} ${professional.User.LastName}`
+											: `Professionnel #${professional.Id.toString()}`}{' '}
+										- {professional.Speciality === Speciality.DOCTOR ? 'Médecin' : 'Infirmier·ère'}
 									</SelectItem>
 								))}
 							</SelectContent>
@@ -163,7 +169,7 @@ export function CreatePrescriptionDialog({
 								id="validFrom"
 								type="date"
 								value={validFrom}
-								onChange={(event_) => setValidFrom(event_.target.value)}
+								onChange={(event) => setValidFrom(event.target.value)}
 							/>
 						</div>
 
@@ -173,7 +179,7 @@ export function CreatePrescriptionDialog({
 								id="validUntil"
 								type="date"
 								value={validUntil}
-								onChange={(event_) => setValidUntil(event_.target.value)}
+								onChange={(event) => setValidUntil(event.target.value)}
 							/>
 						</div>
 					</div>

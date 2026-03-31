@@ -4,15 +4,15 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 import { useAuth } from '@/lib/auth-context';
-import { RolesEnum } from '@/lib/types';
-import { hasRole } from '@/lib/utils';
 
 export function OnboardingRedirect() {
 	const { user, isOnboarded, needsRegistration, isLoading } = useAuth();
 	const router = useRouter();
 
 	useEffect(() => {
-		if (isLoading) return;
+		if (isLoading) {
+			return;
+		}
 
 		if (needsRegistration) {
 			router.push('/register');

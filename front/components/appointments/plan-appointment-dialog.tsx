@@ -53,30 +53,33 @@ function getUpcomingDays(prescription: Prescription, count = 14): Date[] {
 	return days;
 }
 
-function getRemainingCount(act: PrescriptionHealthcareAct, prescription: Prescription): number {
+function getRemainingCount(prescriptionHealthcareAct: PrescriptionHealthcareAct, prescription: Prescription): number {
 	let totalDays: number;
-	if (act.TotalDays != null && act.TotalDays > 0) {
-		totalDays = act.TotalDays;
+
+	if (prescriptionHealthcareAct.TotalDays != null && prescriptionHealthcareAct.TotalDays > 0) {
+		totalDays = prescriptionHealthcareAct.TotalDays;
 	} else {
 		const start = new Date(prescription.StartDate);
 		const end = new Date(prescription.EndDate);
+
 		totalDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
 	}
-	const total = act.OccurrencesPerDay * totalDays;
-	const performed = act.Appointments?.filter((a) => a.Status === AppointmentStatus.PERFORMED).length ?? 0;
-	const planned = act.Appointments?.filter((a) => a.Status === AppointmentStatus.PLANNED).length ?? 0;
+
+	const total = prescriptionHealthcareAct.OccurrencesPerDay * totalDays;
+	const performed =
+		prescriptionHealthcareAct.Appointments?.filter((appointment) => appointment.Status === AppointmentStatus.PERFORMED)
+			.length ?? 0;
+	const planned =
+		prescriptionHealthcareAct.Appointments?.filter((appointment) => appointment.Status === AppointmentStatus.PLANNED)
+			.length ?? 0;
+
 	return Math.max(0, total - performed - planned);
 }
 
-export function PlanAppointmentDialog({
-	open,
-	onOpenChange,
-	prescription: prescriptionProp,
-	onCreated,
-}: PlanAppointmentDialogProps) {
-	const [prescriptions, setPrescriptions] = useState<Prescription[]>(prescriptionProp ? [prescriptionProp] : []);
+export function PlanAppointmentDialog({ open, onOpenChange, prescription, onCreated }: PlanAppointmentDialogProps) {
+	const [prescriptions, setPrescriptions] = useState<Prescription[]>(prescription ? [prescription] : []);
 	const [selectedPrescriptionId, setSelectedPrescriptionId] = useState<string | null>(
-		prescriptionProp ? String(prescriptionProp.Id) : null,
+		prescription ? String(prescription.Id) : null,
 	);
 	const [selectedActId, setSelectedActId] = useState<number | null>(null);
 	const [selectedDateKeys, setSelectedDateKeys] = useState<Set<string>>(new Set());
@@ -86,14 +89,14 @@ export function PlanAppointmentDialog({
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	const selectedPrescription = prescriptions.find((p) => String(p.Id) === (selectedPrescriptionId ?? ''));
+	const selectedPrescription = prescriptions.find(
+		(temporaryPrescription) => String(temporaryPrescription.Id) === (selectedPrescriptionId ?? ''),
+	);
 
 	const plannableActs = useMemo(
 		() =>
-			selectedPrescription?.PrescriptionHealthcareActs?.filter(
-				(act) =>
-					act.Status === PrescriptionHealthcareActStatus.TO_BE_PLANNED ||
-					act.Status === PrescriptionHealthcareActStatus.PLANNED,
+			selectedPrescription?.PrescriptionHealthcareActs?.filter((act) =>
+				[PrescriptionHealthcareActStatus.TO_BE_PLANNED, PrescriptionHealthcareActStatus.PLANNED].includes(act.Status),
 			) ?? [],
 		[selectedPrescription],
 	);
@@ -103,19 +106,24 @@ export function PlanAppointmentDialog({
 		[selectedPrescription],
 	);
 
-	const selectedAct = plannableActs.find((a) => a.Id === selectedActId) ?? null;
+	const selectedAct = plannableActs.find((plannableAct) => plannableAct.Id === selectedActId) ?? null;
 
-	// Nombre restant dynamique : on soustrait les jours déjà cochés
 	const dynamicRemaining = useMemo(() => {
-		if (!selectedAct || !selectedPrescription) return null;
+		if (!selectedAct || !selectedPrescription) {
+			return null;
+		}
+
 		const base = getRemainingCount(selectedAct, selectedPrescription);
+
 		return Math.max(0, base - selectedDateKeys.size);
 	}, [selectedAct, selectedPrescription, selectedDateKeys]);
 
-	const totalToCreate = selectedActId !== null ? selectedDateKeys.size : 0;
+	const totalToCreate = selectedActId ? selectedDateKeys.size : 0;
 
 	useEffect(() => {
-		if (!open) return;
+		if (!open) {
+			return;
+		}
 
 		setSelectedActId(null);
 		setSelectedDateKeys(new Set());
@@ -123,26 +131,26 @@ export function PlanAppointmentDialog({
 		setEndTime('08:30');
 		setError(null);
 
-		if (prescriptionProp) {
-			setPrescriptions([prescriptionProp]);
-			setSelectedPrescriptionId(String(prescriptionProp.Id));
+		if (prescription) {
+			setPrescriptions([prescription]);
+			setSelectedPrescriptionId(String(prescription.Id));
 		} else {
 			setSelectedPrescriptionId(null);
 			setIsFetching(true);
 			fetchProfessionalPrescriptions()
 				.then((data) => {
-					const withPlannableActs = data.filter((p) =>
-						p.PrescriptionHealthcareActs?.some(
-							(act) =>
-								act.Status === PrescriptionHealthcareActStatus.TO_BE_PLANNED ||
-								act.Status === PrescriptionHealthcareActStatus.PLANNED,
+					const withPlannableActs = data.filter((prescriptionWithPlannableActs) =>
+						prescriptionWithPlannableActs.PrescriptionHealthcareActs?.some((act) =>
+							[PrescriptionHealthcareActStatus.TO_BE_PLANNED, PrescriptionHealthcareActStatus.PLANNED].includes(
+								act.Status,
+							),
 						),
 					);
 					setPrescriptions(withPlannableActs);
 				})
 				.finally(() => setIsFetching(false));
 		}
-	}, [open, prescriptionProp]);
+	}, [open, prescription]);
 
 	const handleSelectAct = (actId: number) => {
 		if (selectedActId === actId) {
@@ -155,15 +163,21 @@ export function PlanAppointmentDialog({
 	};
 
 	const toggleDate = (key: string) => {
-		if (!selectedActId) return;
+		if (!selectedActId) {
+			return;
+		}
+
 		const base = selectedAct && selectedPrescription ? getRemainingCount(selectedAct, selectedPrescription) : 0;
-		setSelectedDateKeys((prev) => {
-			const next = new Set(prev);
+
+		setSelectedDateKeys((previous) => {
+			const next = new Set(previous);
+
 			if (next.has(key)) {
 				next.delete(key);
 			} else if (next.size < base) {
 				next.add(key);
 			}
+
 			return next;
 		});
 	};
@@ -171,17 +185,21 @@ export function PlanAppointmentDialog({
 	const handleSubmit = async () => {
 		if (!selectedPrescription || selectedActId === null || selectedDateKeys.size === 0 || !startTime || !endTime) {
 			setError('Veuillez sélectionner un acte, au moins un jour et une plage horaire.');
+
 			return;
 		}
 
 		if (startTime >= endTime) {
 			setError("L'heure de fin doit être après l'heure de début.");
+
 			return;
 		}
 
 		const patientId = selectedPrescription.Patient?.Id;
+
 		if (!patientId) {
 			setError('Impossible de trouver le patient associé.');
+
 			return;
 		}
 
@@ -192,9 +210,10 @@ export function PlanAppointmentDialog({
 		const [endH, endM] = endTime.split(':').map(Number);
 
 		const tasks = [...selectedDateKeys].map((dateKey) => {
-			const [y, m, d] = dateKey.split('-').map(Number);
-			const start = new Date(y, m - 1, d, startH, startM);
-			const end = new Date(y, m - 1, d, endH, endM);
+			const [year, month, day] = dateKey.split('-').map(Number);
+			const start = new Date(year, month - 1, day, startH, startM);
+			const end = new Date(year, month - 1, day, endH, endM);
+
 			return createAppointment({
 				patientId,
 				prescriptionHealthcareActId: selectedActId,
@@ -204,11 +223,12 @@ export function PlanAppointmentDialog({
 		});
 
 		const results = await Promise.all(tasks);
-		const errorCount = results.filter((r) => r.error).length;
+		const errorCount = results.filter((result) => result.error).length;
 
 		if (errorCount > 0 && errorCount === results.length) {
 			setError("Aucun rendez-vous n'a pu être créé. Vérifiez les dates et les autorisations.");
 			setIsSubmitting(false);
+
 			return;
 		}
 
@@ -216,8 +236,9 @@ export function PlanAppointmentDialog({
 			setError(`${String(errorCount)} rendez-vous n'ont pas pu être créés.`);
 		}
 
-		onOpenChange(false);
 		await onCreated();
+
+		onOpenChange(false);
 		setIsSubmitting(false);
 	};
 
@@ -239,7 +260,7 @@ export function PlanAppointmentDialog({
 					</div>
 				) : (
 					<div className="space-y-5 py-2">
-						{!prescriptionProp && (
+						{!prescription && (
 							<div className="space-y-2">
 								<Label>Prescription</Label>
 								{prescriptions.length === 0 ? (
@@ -247,8 +268,8 @@ export function PlanAppointmentDialog({
 								) : (
 									<Select
 										value={selectedPrescriptionId ?? ''}
-										onValueChange={(v) => {
-											setSelectedPrescriptionId(v);
+										onValueChange={(value) => {
+											setSelectedPrescriptionId(value);
 											setSelectedActId(null);
 											setSelectedDateKeys(new Set());
 										}}
@@ -261,9 +282,10 @@ export function PlanAppointmentDialog({
 												const name = p.Patient?.User
 													? `${p.Patient.User.FirstName} ${p.Patient.User.LastName}`
 													: p.SocialSecurityNumber;
+
 												return (
 													<SelectItem key={p.Id} value={String(p.Id)}>
-														{name} — {new Date(p.StartDate).toLocaleDateString('fr-FR')} →{' '}
+														{name} - {new Date(p.StartDate).toLocaleDateString('fr-FR')} →{' '}
 														{new Date(p.EndDate).toLocaleDateString('fr-FR')}
 													</SelectItem>
 												);
@@ -286,7 +308,6 @@ export function PlanAppointmentDialog({
 												const base = getRemainingCount(act, selectedPrescription);
 												const isSelected = selectedActId === act.Id;
 												const isDisabled = selectedActId !== null && !isSelected;
-												// Si cet acte est sélectionné, afficher le restant dynamique
 												const displayRemaining = isSelected && dynamicRemaining !== null ? dynamicRemaining : base;
 
 												return (
@@ -335,7 +356,7 @@ export function PlanAppointmentDialog({
 									<div className="space-y-2">
 										<Label>
 											Jours
-											{selectedAct && selectedPrescription && (
+											{selectedAct && (
 												<span className="text-muted-foreground ml-2 text-xs font-normal">
 													(max {getRemainingCount(selectedAct, selectedPrescription)} jour
 													{getRemainingCount(selectedAct, selectedPrescription) > 1 ? 's' : ''})
@@ -350,7 +371,7 @@ export function PlanAppointmentDialog({
 													const key = `${String(date.getFullYear())}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 													const isSelected = selectedDateKeys.has(key);
 													const isToday = date.toDateString() === new Date().toDateString();
-													const base = selectedAct && selectedPrescription ? getRemainingCount(selectedAct, selectedPrescription) : 0;
+													const base = selectedAct ? getRemainingCount(selectedAct, selectedPrescription) : 0;
 													const isDisabled = !isSelected && selectedDateKeys.size >= base;
 
 													return (
@@ -361,13 +382,12 @@ export function PlanAppointmentDialog({
 															disabled={isDisabled}
 															className={cn(
 																'flex flex-col items-center rounded-lg border px-3 py-2 text-xs transition-all',
-																isSelected
-																	? 'border-primary bg-primary text-primary-foreground'
-																	: isToday && !isDisabled
-																		? 'border-primary/50 bg-primary/5 text-primary'
-																		: 'border-border',
+																isSelected && 'border-primary bg-primary text-primary-foreground',
 																isDisabled && 'cursor-not-allowed opacity-30',
 																!isSelected && !isDisabled && 'hover:border-primary/50',
+																!isSelected && isToday && !isDisabled
+																	? 'border-primary/50 bg-primary/5 text-primary'
+																	: 'border-border',
 															)}
 														>
 															<span className="font-medium">{DAYS_FR[date.getDay()]}</span>
@@ -390,7 +410,7 @@ export function PlanAppointmentDialog({
 												id="start-time"
 												type="time"
 												value={startTime}
-												onChange={(e) => setStartTime(e.target.value)}
+												onChange={(event) => setStartTime(event.target.value)}
 											/>
 										</div>
 										<div className="space-y-2">
@@ -399,7 +419,7 @@ export function PlanAppointmentDialog({
 												id="end-time"
 												type="time"
 												value={endTime}
-												onChange={(e) => setEndTime(e.target.value)}
+												onChange={(event) => setEndTime(event.target.value)}
 											/>
 										</div>
 									</div>

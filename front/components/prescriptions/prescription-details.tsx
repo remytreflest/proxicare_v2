@@ -33,6 +33,7 @@ const statusConfig = {
 
 export function PrescriptionDetails({ prescription, userRole, onPlanningDone }: PrescriptionDetailsProps) {
 	const [isPlanOpen, setIsPlanOpen] = useState(false);
+
 	if (!prescription) {
 		return (
 			<Card className="sticky top-24 border-0 shadow-sm">
@@ -57,7 +58,10 @@ export function PrescriptionDetails({ prescription, userRole, onPlanningDone }: 
 	const prescriptionDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
 	const getActTotalDays = (act: (typeof acts)[number]) =>
 		act.TotalDays != null && act.TotalDays > 0 ? act.TotalDays : prescriptionDays;
-	const totalOccurrences = acts.reduce((accumulator, act) => accumulator + act.OccurrencesPerDay * getActTotalDays(act), 0);
+	const totalOccurrences = acts.reduce(
+		(accumulator, act) => accumulator + act.OccurrencesPerDay * getActTotalDays(act),
+		0,
+	);
 	const completedOccurrences = acts.reduce(
 		(accumulator, act) =>
 			accumulator + (act.Appointments?.filter((ap) => ap.Status === AppointmentStatus.PERFORMED).length ?? 0),

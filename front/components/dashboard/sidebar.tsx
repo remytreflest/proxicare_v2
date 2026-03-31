@@ -76,7 +76,7 @@ export function DashboardSidebar({ user, role }: DashboardSidebarProps) {
 	function NavContent() {
 		return (
 			<>
-				<div className="border-sidebar-border flex items-center gap-3 border-b px-4 py-6">
+				<div className="border-sidebar-border flex items-center gap-3 border-b px-4 py-5">
 					<div className="bg-primary/10 rounded-xl p-2">
 						<Heart className="text-primary h-6 w-6" />
 					</div>

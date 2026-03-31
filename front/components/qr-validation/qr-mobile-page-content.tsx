@@ -18,7 +18,7 @@ export function MobileQRPageContent({ initialTodayAppointments }: MobileQRPageCo
 	const [appointments, setAppointments] = useState(initialTodayAppointments);
 
 	const handleActValidated = (appointmentId: string) => {
-		setAppointments((prev) => prev.filter((a) => String(a.Id) !== appointmentId));
+		setAppointments((previous) => previous.filter((appointment) => String(appointment.Id) !== appointmentId));
 		setSelectedAppointmentId(null);
 	};
 

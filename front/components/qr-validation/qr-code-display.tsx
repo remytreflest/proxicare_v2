@@ -32,7 +32,12 @@ type QRStatus = 'active' | 'error' | 'expired' | 'expiring' | 'loading' | 'valid
 
 const QR_VALIDITY_SECONDS = 60;
 
-export function QRCodeDisplay({ appointments, selectedAppointmentId, onSelectAppointment, onActValidated }: QRCodeDisplayProps) {
+export function QRCodeDisplay({
+	appointments,
+	selectedAppointmentId,
+	onSelectAppointment,
+	onActValidated,
+}: QRCodeDisplayProps) {
 	const [timeLeft, setTimeLeft] = useState(QR_VALIDITY_SECONDS);
 	const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
 	const [status, setStatus] = useState<QRStatus>('loading');
@@ -59,8 +64,9 @@ export function QRCodeDisplay({ appointments, selectedAppointmentId, onSelectApp
 			setQrCodeDataUrl(result.qrCodeDataUrl);
 			setTimeLeft(QR_VALIDITY_SECONDS);
 			setStatus('active');
-		} catch (e) {
-			const message = e instanceof Error ? e.message : '';
+		} catch (error) {
+			const message = error instanceof Error ? error.message : '';
+
 			if (message.includes('déjà été validé')) {
 				setStatus('validated');
 				setTimeout(() => onActValidated?.(String(selectedAppointment.Id)), 1500);

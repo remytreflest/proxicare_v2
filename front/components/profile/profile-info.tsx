@@ -1,26 +1,11 @@
 'use client';
 
-import { useState } from 'react';
-
-import {
-	AlertCircle,
-	Building2,
-	Calendar,
-	Check,
-	CreditCard,
-	Loader2,
-	Mail,
-	MapPin,
-	User as UserIcon,
-} from 'lucide-react';
+import { AlertCircle, Building2, Calendar, CreditCard, Mail, MapPin, User as UserIcon } from 'lucide-react';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
 import type { User, UserRole } from '@/lib/types';
 
 interface ProfileInfoProps {
@@ -29,35 +14,7 @@ interface ProfileInfoProps {
 }
 
 export function ProfileInfo({ user, role }: ProfileInfoProps) {
-	const [isEditing, setIsEditing] = useState(false);
-	const [isSaving, setIsSaving] = useState(false);
-	const address = user.Patient?.Address ?? user.HealthcareProfessional?.Structure?.Address ?? '';
-	const [formData, setFormData] = useState({
-		firstName: user.FirstName,
-		lastName: user.LastName,
-		email: user.Email,
-		address,
-	});
-
-	const handleSave = async () => {
-		setIsSaving(true);
-
-		// FIXME: call profile update API when available
-		await new Promise((resolve) => setTimeout(resolve, 1000));
-
-		setIsSaving(false);
-		setIsEditing(false);
-	};
-
-	const handleCancel = () => {
-		setFormData({
-			firstName: user.FirstName,
-			lastName: user.LastName,
-			email: user.Email,
-			address,
-		});
-		setIsEditing(false);
-	};
+	const address = user.Patient?.Address ?? user.HealthcareProfessional?.Structure?.Address;
 
 	return (
 		<div className="grid gap-6 lg:grid-cols-2">
@@ -71,32 +28,6 @@ export function ProfileInfo({ user, role }: ProfileInfoProps) {
 							</CardTitle>
 							<CardDescription>Gérez vos informations de base</CardDescription>
 						</div>
-
-						{isEditing ? (
-							<div className="flex gap-2">
-								<Button variant="outline" size="sm" onClick={handleCancel} className="bg-transparent">
-									Annuler
-								</Button>
-
-								<Button size="sm" onClick={handleSave} disabled={isSaving}>
-									{isSaving ? (
-										<>
-											<Loader2 className="mr-1 h-4 w-4 animate-spin" />
-											Enregistrement...
-										</>
-									) : (
-										<>
-											<Check className="mr-1 h-4 w-4" />
-											Enregistrer
-										</>
-									)}
-								</Button>
-							</div>
-						) : (
-							<Button variant="outline" size="sm" onClick={() => setIsEditing(true)} className="bg-transparent">
-								Modifier
-							</Button>
-						)}
 					</div>
 				</CardHeader>
 
@@ -104,30 +35,12 @@ export function ProfileInfo({ user, role }: ProfileInfoProps) {
 					<div className="grid gap-4 sm:grid-cols-2">
 						<div className="space-y-2">
 							<Label htmlFor="firstName">Prénom</Label>
-
-							{isEditing ? (
-								<Input
-									id="firstName"
-									value={formData.firstName}
-									onChange={(event_) => setFormData({ ...formData, firstName: event_.target.value })}
-								/>
-							) : (
-								<p className="text-foreground py-2 text-sm">{formData.firstName}</p>
-							)}
+							<p className="text-foreground py-2 text-sm">{user.FirstName}</p>
 						</div>
 
 						<div className="space-y-2">
 							<Label htmlFor="lastName">Nom</Label>
-
-							{isEditing ? (
-								<Input
-									id="lastName"
-									value={formData.lastName}
-									onChange={(event_) => setFormData({ ...formData, lastName: event_.target.value })}
-								/>
-							) : (
-								<p className="text-foreground py-2 text-sm">{formData.lastName}</p>
-							)}
+							<p className="text-foreground py-2 text-sm">{user.LastName}</p>
 						</div>
 					</div>
 
@@ -136,17 +49,7 @@ export function ProfileInfo({ user, role }: ProfileInfoProps) {
 							<Mail className="h-3.5 w-3.5" />
 							Email
 						</Label>
-
-						{isEditing ? (
-							<Input
-								id="email"
-								type="email"
-								value={formData.email}
-								onChange={(event_) => setFormData({ ...formData, email: event_.target.value })}
-							/>
-						) : (
-							<p className="text-foreground py-2 text-sm">{formData.email}</p>
-						)}
+						<p className="text-foreground py-2 text-sm">{user.Email}</p>
 					</div>
 
 					<div className="space-y-2">
@@ -154,18 +57,7 @@ export function ProfileInfo({ user, role }: ProfileInfoProps) {
 							<MapPin className="h-3.5 w-3.5" />
 							Adresse
 						</Label>
-
-						{isEditing ? (
-							<Textarea
-								id="address"
-								value={formData.address}
-								onChange={(event_) => setFormData({ ...formData, address: event_.target.value })}
-								placeholder="Votre adresse complète"
-								rows={2}
-							/>
-						) : (
-							<p className="text-foreground py-2 text-sm">{formData.address || 'Non renseignée'}</p>
-						)}
+						<p className="text-foreground py-2 text-sm">{address ?? 'Non renseignée'}</p>
 					</div>
 				</CardContent>
 			</Card>
@@ -190,7 +82,7 @@ export function ProfileInfo({ user, role }: ProfileInfoProps) {
 											month: 'long',
 											year: 'numeric',
 										})
-									: '—'}
+									: '-'}
 							</span>
 						</div>
 
@@ -244,7 +136,7 @@ export function ProfileInfo({ user, role }: ProfileInfoProps) {
 							<div className="flex items-center justify-between py-2">
 								<span className="text-muted-foreground text-sm">Nom de la structure</span>
 								<span className="text-foreground text-sm font-medium">
-									{user.HealthcareProfessional?.Structure?.Name ?? '—'}
+									{user.HealthcareProfessional?.Structure?.Name ?? '-'}
 								</span>
 							</div>
 
@@ -253,7 +145,7 @@ export function ProfileInfo({ user, role }: ProfileInfoProps) {
 							<div className="flex items-center justify-between py-2">
 								<span className="text-muted-foreground text-sm">Adresse</span>
 								<span className="text-foreground text-sm">
-									{user.HealthcareProfessional?.Structure?.Address ?? '—'}
+									{user.HealthcareProfessional?.Structure?.Address ?? '-'}
 								</span>
 							</div>
 						</CardContent>

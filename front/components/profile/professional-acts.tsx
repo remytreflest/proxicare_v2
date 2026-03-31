@@ -55,22 +55,6 @@ export function ProfessionalActs({ initialAllActs, initialUserActs }: Profession
 
 	return (
 		<div className="space-y-6">
-			<Card className="border-0 border-l-4 border-l-[hsl(var(--accent))] bg-[hsl(var(--accent))]/5 shadow-sm">
-				<CardContent className="p-4">
-					<div className="flex items-start gap-3">
-						<Stethoscope className="mt-0.5 h-5 w-5 text-[hsl(var(--accent))]" />
-
-						<div>
-							<p className="text-foreground font-medium">Catalogue d'actes</p>
-							<p className="text-muted-foreground text-sm">
-								Sélectionnez les actes que vous êtes habilité(e) à réaliser. Seuls ces actes vous seront proposés lors
-								de la planification des soins.
-							</p>
-						</div>
-					</div>
-				</CardContent>
-			</Card>
-
 			<Card className="border-0 shadow-sm">
 				<CardContent className="p-4">
 					<div className="flex items-center justify-between">

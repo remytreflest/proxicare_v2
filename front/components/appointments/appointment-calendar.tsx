@@ -70,11 +70,12 @@ export function AppointmentCalendar({
 	const appointmentsByDate = useMemo(() => {
 		const map = new Map<string, Appointment[]>();
 
-		for (const apt of appointments) {
-			if (apt.Status === AppointmentStatus.PERFORMED || apt.Status === AppointmentStatus.CANCELLED) continue;
+		for (const appointment of appointments) {
+			if ([AppointmentStatus.PERFORMED, AppointmentStatus.CANCELLED].includes(appointment.Status)) {
+				continue;
+			}
 
-			// Extraire YYYY-MM-DD directement depuis la chaîne ISO pour éviter les décalages timezone
-			const iso = apt.AppointmentStartDate;
+			const iso = appointment.AppointmentStartDate;
 			const dateOnly = typeof iso === 'string' ? iso.slice(0, 10) : new Date(iso).toISOString().slice(0, 10);
 			const [year, month, day] = dateOnly.split('-').map(Number);
 			const dateKey = new Date(year, month - 1, day).toDateString();
@@ -83,7 +84,7 @@ export function AppointmentCalendar({
 				map.set(dateKey, []);
 			}
 
-			map.get(dateKey)?.push(apt);
+			map.get(dateKey)?.push(appointment);
 		}
 
 		return map;
@@ -241,7 +242,12 @@ export function AppointmentCalendar({
 												/>
 											))
 										) : (
-											<span className={cn('text-[10px] font-semibold leading-none', isSelected(date) ? 'text-primary-foreground' : 'text-primary')}>
+											<span
+												className={cn(
+													'text-[10px] leading-none font-semibold',
+													isSelected(date) ? 'text-primary-foreground' : 'text-primary',
+												)}
+											>
 												{dayAppointments.length}
 											</span>
 										)}

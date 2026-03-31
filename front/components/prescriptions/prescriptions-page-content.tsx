@@ -95,10 +95,15 @@ export function PrescriptionsPageContent({
 						prescription={selectedPrescription}
 						userRole={role}
 						onPlanningDone={async () => {
-							const updated = await (role === 'patient' ? fetchPatientPrescriptions() : fetchProfessionalPrescriptions());
+							const updated = await (role === 'patient'
+								? fetchPatientPrescriptions()
+								: fetchProfessionalPrescriptions());
+
 							setPrescriptions(updated);
+
 							if (selectedPrescription) {
-								const refreshed = updated.find((p) => p.Id === selectedPrescription.Id) ?? null;
+								const refreshed = updated.find((prescription) => prescription.Id === selectedPrescription.Id) ?? null;
+
 								setSelectedPrescription(refreshed);
 							}
 						}}
