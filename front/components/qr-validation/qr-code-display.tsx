@@ -30,7 +30,7 @@ interface QRCodeDisplayProps {
 
 type QRStatus = 'active' | 'error' | 'expired' | 'expiring' | 'loading' | 'validated';
 
-const QR_VALIDITY_SECONDS = 15;
+const QR_VALIDITY_SECONDS = 60;
 
 export function QRCodeDisplay({ appointments, selectedAppointmentId, onSelectAppointment, onActValidated }: QRCodeDisplayProps) {
 	const [timeLeft, setTimeLeft] = useState(QR_VALIDITY_SECONDS);

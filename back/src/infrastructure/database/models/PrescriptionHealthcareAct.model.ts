@@ -10,6 +10,7 @@ export class PrescriptionHealthcareAct extends Model {
   public PrescriptionId!: number;
   public HealthcareActId!: number;
   public OccurrencesPerDay!: number;
+  public TotalDays!: number | null;
   public Status!: PrescriptionHealthcareactsStatus;
   public ValidateToken!: string | null;
   public ValidateTokenLimitTime!: Date | null;
@@ -36,6 +37,11 @@ PrescriptionHealthcareAct.init({
   OccurrencesPerDay: {
     type: DataTypes.INTEGER,
     allowNull: false,
+  },
+  TotalDays: {
+    type: DataTypes.INTEGER,
+    allowNull: true,
+    defaultValue: null,
   },
   Status: {
     type: DataTypes.STRING(50),

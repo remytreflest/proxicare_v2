@@ -54,9 +54,14 @@ function getUpcomingDays(prescription: Prescription, count = 14): Date[] {
 }
 
 function getRemainingCount(act: PrescriptionHealthcareAct, prescription: Prescription): number {
-	const start = new Date(prescription.StartDate);
-	const end = new Date(prescription.EndDate);
-	const totalDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+	let totalDays: number;
+	if (act.TotalDays != null && act.TotalDays > 0) {
+		totalDays = act.TotalDays;
+	} else {
+		const start = new Date(prescription.StartDate);
+		const end = new Date(prescription.EndDate);
+		totalDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+	}
 	const total = act.OccurrencesPerDay * totalDays;
 	const performed = act.Appointments?.filter((a) => a.Status === AppointmentStatus.PERFORMED).length ?? 0;
 	const planned = act.Appointments?.filter((a) => a.Status === AppointmentStatus.PLANNED).length ?? 0;

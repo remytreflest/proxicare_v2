@@ -46,6 +46,7 @@ export class PrescriptionHealthcareActRepository implements IPrescriptionHealthc
     PrescriptionId: number;
     HealthcareActId: number;
     OccurrencesPerDay: number;
+    TotalDays?: number | null;
     Status: string;
   }): Promise<PrescriptionHealthcareAct> {
     return PrescriptionHealthcareAct.create(data);

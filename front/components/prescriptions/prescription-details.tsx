@@ -54,8 +54,10 @@ export function PrescriptionDetails({ prescription, userRole, onPlanningDone }: 
 	const acts = prescription.PrescriptionHealthcareActs ?? [];
 	const start = new Date(prescription.StartDate);
 	const end = new Date(prescription.EndDate);
-	const totalDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
-	const totalOccurrences = acts.reduce((accumulator, act) => accumulator + act.OccurrencesPerDay * totalDays, 0);
+	const prescriptionDays = Math.max(1, Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)));
+	const getActTotalDays = (act: (typeof acts)[number]) =>
+		act.TotalDays != null && act.TotalDays > 0 ? act.TotalDays : prescriptionDays;
+	const totalOccurrences = acts.reduce((accumulator, act) => accumulator + act.OccurrencesPerDay * getActTotalDays(act), 0);
 	const completedOccurrences = acts.reduce(
 		(accumulator, act) =>
 			accumulator + (act.Appointments?.filter((ap) => ap.Status === AppointmentStatus.PERFORMED).length ?? 0),
@@ -157,7 +159,7 @@ export function PrescriptionDetails({ prescription, userRole, onPlanningDone }: 
 						<h4 className="text-foreground mb-3 text-sm font-medium">Actes prescrits</h4>
 						<div className="space-y-3">
 							{acts.map((act) => {
-								const actTotal = act.OccurrencesPerDay * totalDays;
+								const actTotal = act.OccurrencesPerDay * getActTotalDays(act);
 								const actCompleted =
 									act.Appointments?.filter((appointment) => appointment.Status === AppointmentStatus.PERFORMED)
 										.length ?? 0;
