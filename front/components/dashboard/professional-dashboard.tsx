@@ -3,7 +3,7 @@
 import { useMemo } from 'react';
 import Link from 'next/link';
 
-import { Activity, ArrowRight, Calendar, CheckCircle2, Clock, TrendingUp, Users } from 'lucide-react';
+import { Activity, ArrowRight, Calendar, CheckCircle2, Clock, Users } from 'lucide-react';
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -31,12 +31,6 @@ export function ProfessionalDashboard({ appointments }: ProfessionalDashboardPro
 		)
 		.toSorted((a, b) => new Date(a.AppointmentStartDate).getTime() - new Date(b.AppointmentStartDate).getTime());
 
-	const completedToday = appointments.filter(
-		(a) =>
-			new Date(a.AppointmentStartDate).toDateString() === new Date().toDateString() &&
-			a.Status === AppointmentStatus.PERFORMED,
-	);
-
 	const uniquePatients = useMemo(() => {
 		const map = new Map<number, Appointment>();
 
@@ -56,7 +50,6 @@ export function ProfessionalDashboard({ appointments }: ProfessionalDashboardPro
 			icon: Users,
 			color: 'text-primary',
 			bgColor: 'bg-primary/10',
-			trend: '',
 		},
 		{
 			title: "Rendez-vous aujourd'hui",
@@ -64,7 +57,6 @@ export function ProfessionalDashboard({ appointments }: ProfessionalDashboardPro
 			icon: Calendar,
 			color: 'text-[hsl(var(--accent))]',
 			bgColor: 'bg-[hsl(var(--accent))]/10',
-			trend: `${String(completedToday.length)} terminé${completedToday.length > 1 ? 's' : ''}`,
 		},
 		{
 			title: 'Actes validés',
@@ -72,7 +64,6 @@ export function ProfessionalDashboard({ appointments }: ProfessionalDashboardPro
 			icon: CheckCircle2,
 			color: 'text-[hsl(var(--success))]',
 			bgColor: 'bg-[hsl(var(--success))]/10',
-			trend: 'Total',
 		},
 		{
 			title: 'En attente',
@@ -80,7 +71,6 @@ export function ProfessionalDashboard({ appointments }: ProfessionalDashboardPro
 			icon: Clock,
 			color: 'text-[hsl(var(--warning))]',
 			bgColor: 'bg-[hsl(var(--warning))]/10',
-			trend: 'À planifier',
 		},
 	];
 
@@ -90,20 +80,15 @@ export function ProfessionalDashboard({ appointments }: ProfessionalDashboardPro
 				{stats.map((stat) => (
 					<Card key={stat.title} className="border-0 shadow-sm">
 						<CardContent className="p-5">
-							<div className="flex items-start justify-between">
+							<div className="flex items-center gap-4">
 								<div className={`rounded-xl p-3 ${stat.bgColor}`}>
 									<stat.icon className={`h-5 w-5 ${stat.color}`} />
 								</div>
 
-								<span className="text-muted-foreground flex items-center gap-1 text-xs">
-									<TrendingUp className="h-3 w-3" />
-									{stat.trend}
-								</span>
-							</div>
-
-							<div className="mt-3">
-								<p className="text-foreground text-2xl font-bold">{stat.value}</p>
-								<p className="text-muted-foreground text-sm">{stat.title}</p>
+								<div>
+									<p className="text-foreground text-2xl font-bold">{stat.value}</p>
+									<p className="text-muted-foreground text-sm">{stat.title}</p>
+								</div>
 							</div>
 						</CardContent>
 					</Card>
